@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bheyxbsxp2uwi"]
+
+[ext_resource type="PackedScene" uid="uid://ch1xcne11jttd" path="res://scenes/buyukSandik/base_sandik.tscn" id="1_1xhmb"]
+[ext_resource type="Texture2D" uid="uid://paev0midfi6d" path="res://assets/Sandik3/sandikTuruncu64.png" id="2_kfmbb"]
+
+[node name="TuruncuSandik" instance=ExtResource("1_1xhmb")]
+renk = "turuncu"
+
+[node name="SandikResmi" parent="." index="1"]
+texture = ExtResource("2_kfmbb")

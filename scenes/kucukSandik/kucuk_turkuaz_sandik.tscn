@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://c4eefkjn7c5jq"]
+
+[ext_resource type="PackedScene" uid="uid://dhyty75bs16gs" path="res://scenes/kucukSandik/base_kucuk_sandik.tscn" id="1_pavuf"]
+[ext_resource type="Texture2D" uid="uid://ccye54mf2ujjd" path="res://assets/Sandik2/sandikTurkuaz32.png" id="2_pavuf"]
+
+[node name="kucukTurkuazSandik" instance=ExtResource("1_pavuf")]
+renk = "turkuaz"
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_pavuf")

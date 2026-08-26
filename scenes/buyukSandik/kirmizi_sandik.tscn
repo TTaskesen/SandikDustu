@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dkjwinbjo3ma5"]
+
+[ext_resource type="PackedScene" uid="uid://ch1xcne11jttd" path="res://scenes/buyukSandik/base_sandik.tscn" id="1_q0etp"]
+[ext_resource type="Texture2D" uid="uid://bgn70uo2if0du" path="res://assets/Sandik3/sandikKirmizi64.png" id="2_sbitu"]
+
+[node name="KirmiziSandik" instance=ExtResource("1_q0etp")]
+renk = "kirmizi"
+
+[node name="SandikResmi" parent="." index="1"]
+texture = ExtResource("2_sbitu")

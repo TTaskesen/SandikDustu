@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=3 uid="uid://duu6re2pkmh27"]
+
+[ext_resource type="Script" uid="uid://bwpslsn6v8xql" path="res://scripts/oyun/oyun_yoneticisi.gd" id="1_wo5sf"]
+[ext_resource type="AudioStreamWAV" path="res://assets/ses/tik.wav" id="2_tik"]
+[ext_resource type="AudioStreamWAV" path="res://assets/ses/yakalama.wav" id="3_yak"]
+[ext_resource type="AudioStreamWAV" path="res://assets/ses/kaybetme.wav" id="4_kay"]
+[ext_resource type="AudioStreamWAV" path="res://assets/ses/gecis.wav" id="5_gec"]
+
+[node name="KucukSandikOlustur" type="Node2D"]
+script = ExtResource("1_wo5sf")
+
+[node name="Projectiles" type="Node2D" parent="."]
+
+[node name="SandikPozisyon" type="Node2D" parent="."]
+
+[node name="Marker2D" type="Marker2D" parent="SandikPozisyon"]
+position = Vector2(97, -100)
+
+[node name="Marker2D2" type="Marker2D" parent="SandikPozisyon"]
+position = Vector2(287, -100)
+
+[node name="Marker2D3" type="Marker2D" parent="SandikPozisyon"]
+position = Vector2(480, -100)
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.6
+
+[node name="SesTik" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_tik")
+volume_db = -8.0
+
+[node name="SesYakalama" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_yak")
+volume_db = -6.0
+
+[node name="SesKaybetme" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_kay")
+volume_db = -4.0
+
+[node name="SesGecis" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_gec")
+volume_db = -6.0
+
+[connection signal="timeout" from="Timer" to="." method="kucuk_sandik_olustur"]

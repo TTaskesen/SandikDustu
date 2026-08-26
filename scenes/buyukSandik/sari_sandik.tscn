@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://by21qpgrdi78d"]
+
+[ext_resource type="PackedScene" uid="uid://ch1xcne11jttd" path="res://scenes/buyukSandik/base_sandik.tscn" id="1_wonjh"]
+[ext_resource type="Texture2D" uid="uid://d0u4lodyffjbd" path="res://assets/Sandik3/sandikSari64.png" id="2_6hqfe"]
+
+[node name="SariSandik" unique_id=2025762909 instance=ExtResource("1_wonjh")]
+renk = "sari"
+
+[node name="SandikResmi" parent="." index="1"]
+texture = ExtResource("2_6hqfe")

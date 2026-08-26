@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://ucuqqib703vj"]
+
+[ext_resource type="Texture2D" uid="uid://ce7yaonojthfk" path="res://assets/Sandik3/ucgen.png" id="1_os0xo"]
+[ext_resource type="Script" uid="uid://dfbx077pw2m4u" path="res://scenes/ucgen.gd" id="2_ucgen"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1oq2m"]
+size = Vector2(188, 93)
+
+[node name="Üçgen" type="Area2D" unique_id=525630748]
+script = ExtResource("2_ucgen")
+
+[node name="Dolgu" type="Polygon2D" parent="." unique_id=789213392]
+position = Vector2(-93.99999, -48.999996)
+scale = Vector2(2.9, 2.9)
+color = Color(0.843137, 0.843137, 0.843137, 1)
+antialiased = true
+polygon = PackedVector2Array(32.5, 2, 3.5, 29, 61.5, 29)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=801825721]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_1oq2m")
+
+[node name="ÜçgenResmi" type="Sprite2D" parent="." unique_id=85527037]
+scale = Vector2(2.9, 2.9)
+texture = ExtResource("1_os0xo")

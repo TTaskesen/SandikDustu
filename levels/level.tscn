@@ -1,0 +1,413 @@
+[gd_scene load_steps=23 format=3 uid="uid://i8t6pcm3crgi"]
+
+[ext_resource type="FontFile" uid="uid://77g87e00ax6i" path="res://fonts/NeuePower-Ultra.ttf" id="1_80vhd"]
+[ext_resource type="FontFile" uid="uid://cbisamkieux2c" path="res://fonts/font-80.tres" id="1_hjsbj"]
+[ext_resource type="Script" uid="uid://deu2oke8r8h6s" path="res://scripts/level.gd" id="1_safpt"]
+[ext_resource type="Script" uid="uid://dnl1v43huh7t" path="res://scripts/ui/basla_menu.gd" id="4_lh335"]
+[ext_resource type="Script" uid="uid://cgmepo3al8cqp" path="res://scripts/ui/sayac.gd" id="5_safpt"]
+[ext_resource type="PackedScene" uid="uid://cnn7lip6s4ukd" path="res://scenes/buyukSandik/acik_yesil_sandik.tscn" id="6_rtcij"]
+[ext_resource type="Script" uid="uid://bcy71vct0cgq" path="res://scripts/ui/zor_menu.gd" id="6_u6cys"]
+[ext_resource type="PackedScene" uid="uid://dkjwinbjo3ma5" path="res://scenes/buyukSandik/kirmizi_sandik.tscn" id="7_ukwr8"]
+[ext_resource type="PackedScene" uid="uid://dptjcpsqixphj" path="res://scenes/buyukSandik/mavi_sandik.tscn" id="8_pb8y7"]
+[ext_resource type="Texture2D" uid="uid://c14ao83i8r5n" path="res://assets/bariyer.png" id="9_3ca7f"]
+[ext_resource type="PackedScene" uid="uid://3ws34fdrpxp6" path="res://scenes/buyukSandik/mor_sandik.tscn" id="10_ta7ci"]
+[ext_resource type="PackedScene" uid="uid://ucuqqib703vj" path="res://scenes/ucgen.tscn" id="10_ukwr8"]
+[ext_resource type="PackedScene" uid="uid://dle46akuq8od" path="res://scenes/buyukSandik/pembe_sandik.tscn" id="11_lh335"]
+[ext_resource type="PackedScene" uid="uid://by21qpgrdi78d" path="res://scenes/buyukSandik/sari_sandik.tscn" id="12_u6cys"]
+[ext_resource type="PackedScene" uid="uid://bdfvmk8t18wbx" path="res://scenes/buyukSandik/turkuaz_sandik.tscn" id="13_368ro"]
+[ext_resource type="PackedScene" uid="uid://bheyxbsxp2uwi" path="res://scenes/buyukSandik/turuncu_sandik.tscn" id="14_3ca7f"]
+[ext_resource type="PackedScene" uid="uid://doxalf52nvq5y" path="res://scenes/buyukSandik/yesil_sandik.tscn" id="15_kogck"]
+[ext_resource type="PackedScene" uid="uid://duu6re2pkmh27" path="res://scenes/oyun/oyun_yoneticisi.tscn" id="20_3ca7f"]
+[ext_resource type="Script" uid="uid://jbuxbgpemb2f" path="res://scripts/ui/kolay_menu.gd" id="6_pb8y7"]
+
+[sub_resource type="Theme" id="Theme_cwqvt"]
+resource_local_to_scene = true
+default_font = ExtResource("1_80vhd")
+default_font_size = 60
+
+[sub_resource type="Theme" id="Theme_3ca7f"]
+resource_local_to_scene = true
+default_font = ExtResource("1_80vhd")
+default_font_size = 60
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ukwr8"]
+size = Vector2(575, 30)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.0980392, 0.137255, 0.254902, 0.96)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.843137, 0.839216, 0.831373, 0.6)
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_safpt")
+
+[node name="MenuButonlar" type="Node2D" parent="."]
+
+[node name="UI" type="Node2D" parent="MenuButonlar"]
+metadata/_edit_lock_ = true
+
+[node name="Baslik" type="Label" parent="MenuButonlar/UI"]
+texture_filter = 1
+offset_top = 171.0
+offset_right = 576.0
+offset_bottom = 251.0
+theme_override_colors/font_color = Color(0.84162, 0.8408, 0.833454, 1)
+theme_override_fonts/font = ExtResource("1_hjsbj")
+theme_override_font_sizes/font_size = 80
+text = "Sandık Düştü"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sayac" type="Node2D" parent="MenuButonlar"]
+script = ExtResource("5_safpt")
+
+[node name="SayacLabel" type="Label" parent="MenuButonlar/Sayac"]
+offset_left = 228.0
+offset_top = -200.0
+offset_right = 348.0
+offset_bottom = -30.0
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_fonts/font = ExtResource("1_hjsbj")
+theme_override_font_sizes/font_size = 190
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GeriButon" type="Button" parent="MenuButonlar/Sayac"]
+offset_top = -450.0
+offset_right = 120.0
+offset_bottom = -352.0
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_fonts/font = ExtResource("1_hjsbj")
+theme_override_font_sizes/font_size = 40
+text = "Geri"
+flat = true
+
+[node name="YüksekSkorLabel" type="Label" parent="MenuButonlar/Sayac"]
+offset_left = 340.0
+offset_top = -450.0
+offset_right = 551.0
+offset_bottom = -362.0
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_fonts/font = ExtResource("1_hjsbj")
+theme_override_font_sizes/font_size = 40
+text = "Rekor: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BaslaMenuButonlar" type="Node2D" parent="MenuButonlar"]
+
+[node name="BaslaMenu" type="VBoxContainer" parent="MenuButonlar/BaslaMenuButonlar"]
+unique_name_in_owner = true
+offset_top = 300.0
+offset_right = 576.0
+offset_bottom = 512.0
+script = ExtResource("4_lh335")
+
+[node name="Basla" type="Button" parent="MenuButonlar/BaslaMenuButonlar/BaslaMenu"]
+texture_filter = 1
+layout_mode = 2
+focus_mode = 0
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_colors/font_focus_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_colors/font_pressed_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Başla"
+flat = true
+
+[node name="Ayarlar" type="Button" parent="MenuButonlar/BaslaMenuButonlar/BaslaMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Ayarlar (Yakında)"
+disabled = true
+flat = true
+
+[node name="Açıklama" type="Button" parent="MenuButonlar/BaslaMenuButonlar/BaslaMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Açıklama"
+flat = true
+
+[node name="Hakkımızda" type="Button" parent="MenuButonlar/BaslaMenuButonlar/BaslaMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Hakkımızda"
+flat = true
+
+[node name="Çıkış" type="Button" parent="MenuButonlar/BaslaMenuButonlar/BaslaMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Çıkış"
+flat = true
+
+[node name="ZorMenuButonlar" type="Node2D" parent="MenuButonlar"]
+
+[node name="ZorMenu" type="VBoxContainer" parent="MenuButonlar/ZorMenuButonlar"]
+unique_name_in_owner = true
+offset_left = 576.0
+offset_top = 300.0
+offset_right = 1152.0
+offset_bottom = 584.0
+script = ExtResource("6_u6cys")
+
+[node name="Kolay" type="Button" parent="MenuButonlar/ZorMenuButonlar/ZorMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Kolay"
+flat = true
+
+[node name="Orta" type="Button" parent="MenuButonlar/ZorMenuButonlar/ZorMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Orta"
+flat = true
+
+[node name="Zor" type="Button" parent="MenuButonlar/ZorMenuButonlar/ZorMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Zor"
+flat = true
+
+[node name="Geri" type="Button" parent="MenuButonlar/ZorMenuButonlar/ZorMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Geri"
+flat = true
+
+[node name="TekrarDene" type="Node2D" parent="MenuButonlar"]
+
+[node name="TekrarLabel" type="Button" parent="MenuButonlar/TekrarDene"]
+unique_name_in_owner = true
+offset_left = 576.0
+offset_top = -150.0
+offset_right = 1152.0
+offset_bottom = -82.0
+theme = SubResource("Theme_3ca7f")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_fonts/font = ExtResource("1_hjsbj")
+theme_override_font_sizes/font_size = 60
+text = "Tekrar Deneyin"
+flat = true
+
+[node name="KolayMenu" type="Node2D" parent="."]
+script = ExtResource("6_pb8y7")
+
+[node name="MenuEkrani" type="VBoxContainer" parent="KolayMenu"]
+
+[node name="Bariyer" type="Area2D" parent="KolayMenu/MenuEkrani"]
+
+[node name="Sprite2D" type="Sprite2D" parent="KolayMenu/MenuEkrani/Bariyer"]
+modulate = Color(0.956863, 0, 0, 1)
+position = Vector2(288, 932)
+scale = Vector2(1, 0.382353)
+texture = ExtResource("9_3ca7f")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KolayMenu/MenuEkrani/Bariyer"]
+position = Vector2(288.5, 932)
+shape = SubResource("RectangleShape2D_ukwr8")
+
+[node name="Sandiklar64" type="Node2D" parent="KolayMenu/MenuEkrani"]
+
+[node name="Açik YeşilSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("6_rtcij")]
+position = Vector2(96, 986)
+
+[node name="KirmiziSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("7_ukwr8")]
+position = Vector2(288, 986)
+
+[node name="MaviSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("8_pb8y7")]
+position = Vector2(480, 986)
+
+[node name="MorSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("10_ta7ci")]
+position = Vector2(96, 1082)
+
+[node name="PembeSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("11_lh335")]
+position = Vector2(288, 1082)
+
+[node name="SariSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("12_u6cys")]
+position = Vector2(480, 1083)
+
+[node name="TurkuazSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("13_368ro")]
+position = Vector2(96, 1178)
+
+[node name="TuruncuSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("14_3ca7f")]
+position = Vector2(288, 1178)
+
+[node name="YeşilSandik" parent="KolayMenu/MenuEkrani/Sandiklar64" instance=ExtResource("15_kogck")]
+position = Vector2(480, 1179)
+
+[node name="Üçgenler" type="Node2D" parent="KolayMenu/MenuEkrani"]
+
+[node name="Üçgen" parent="KolayMenu/MenuEkrani/Üçgenler" instance=ExtResource("10_ukwr8")]
+position = Vector2(95, 892)
+sutun = 0
+
+[node name="Dolgu" parent="KolayMenu/MenuEkrani/Üçgenler/Üçgen" index="0"]
+color = Color(0.372549, 0.839216, 0.811765, 1)
+
+[node name="Üçgen2" parent="KolayMenu/MenuEkrani/Üçgenler" instance=ExtResource("10_ukwr8")]
+position = Vector2(288, 892)
+sutun = 1
+
+[node name="Dolgu" parent="KolayMenu/MenuEkrani/Üçgenler/Üçgen2" index="0"]
+color = Color(0.941176, 0.815686, 0.376471, 1)
+
+[node name="Üçgen3" parent="KolayMenu/MenuEkrani/Üçgenler" instance=ExtResource("10_ukwr8")]
+position = Vector2(481, 892)
+sutun = 2
+
+[node name="Dolgu" parent="KolayMenu/MenuEkrani/Üçgenler/Üçgen3" index="0"]
+color = Color(0.886275, 0.376471, 0.376471, 1)
+
+[node name="KucukSandikOlustur" parent="." instance=ExtResource("20_3ca7f")]
+
+[node name="HakkimizdaKarartma" type="ColorRect" parent="."]
+visible = false
+z_index = 20
+offset_right = 576.0
+offset_bottom = 800.0
+mouse_filter = 0
+color = Color(0.0156863, 0.0235294, 0.0588235, 0.78)
+
+[node name="HakkimizdaPaneli" type="Panel" parent="."]
+visible = false
+z_index = 21
+offset_left = 42.0
+offset_top = 110.0
+offset_right = 534.0
+offset_bottom = 690.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Baslik" type="Label" parent="HakkimizdaPaneli"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 462.0
+offset_bottom = 98.0
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_fonts/font = ExtResource("1_hjsbj")
+theme_override_font_sizes/font_size = 52
+text = "Açıklama"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Metin" type="Label" parent="HakkimizdaPaneli"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 112.0
+offset_right = 462.0
+offset_bottom = 440.0
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_fonts/font = ExtResource("1_80vhd")
+theme_override_font_sizes/font_size = 26
+text = "Sandık Düştü oyununa hoş geldiniz!
+
+Üstten düşen sandığın rengini alttaki büyük sandıklardan seçin, üçgene dokunun ve sandıkları yakalayın. Kolaydan zora tüm renkleri toplayın!"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Kapat" type="Button" parent="HakkimizdaPaneli"]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 465.0
+offset_right = 342.0
+offset_bottom = 545.0
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_colors/font_focus_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_colors/font_pressed_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_font_sizes/font_size = 40
+text = "Kapat"
+flat = true
+
+[node name="HakkimizdaEkrani" type="Panel" parent="."]
+offset_left = 576.0
+offset_top = 0.0
+offset_right = 1152.0
+offset_bottom = 800.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Baslik" type="Label" parent="HakkimizdaEkrani"]
+layout_mode = 0
+offset_left = 88.0
+offset_top = 150.0
+offset_right = 488.0
+offset_bottom = 230.0
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_fonts/font = ExtResource("1_hjsbj")
+theme_override_font_sizes/font_size = 60
+text = "Hakkımızda"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Metin" type="Label" parent="HakkimizdaEkrani"]
+layout_mode = 0
+offset_left = 63.0
+offset_top = 280.0
+offset_right = 513.0
+offset_bottom = 560.0
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_fonts/font = ExtResource("1_80vhd")
+theme_override_font_sizes/font_size = 34
+text = "Ben Turgut Taşkesen.
+
+Makine mühendisiyim ve oyun geliştiriyorum.
+
+Bu oyunu Google Play Console'da yayınlayacağım."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Geri" type="Button" parent="HakkimizdaEkrani"]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 610.0
+offset_right = 376.0
+offset_bottom = 690.0
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_colors/font_focus_color = Color(0.843137, 0.839216, 0.831373, 1)
+theme_override_colors/font_pressed_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Geri"
+flat = true
+
+[connection signal="pressed" from="MenuButonlar/Sayac/GeriButon" to="MenuButonlar/ZorMenuButonlar/ZorMenu" method="_on_geri_buton_pressed"]
+[connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Basla" to="MenuButonlar/BaslaMenuButonlar/BaslaMenu" method="_on_basla_pressed"]
+[connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Açıklama" to="." method="_on_aciklama_pressed"]
+[connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Hakkımızda" to="." method="_on_hakkimizda_pressed"]
+[connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Çıkış" to="." method="_on_çıkış_pressed"]
+[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Kolay" to="MenuButonlar/Sayac" method="_on_kolay_pressed"]
+[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Orta" to="KolayMenu" method="_on_orta_pressed"]
+[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Zor" to="KolayMenu" method="_on_zor_pressed"]
+[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Geri" to="MenuButonlar/ZorMenuButonlar/ZorMenu" method="_on_geri_pressed"]
+[connection signal="pressed" from="MenuButonlar/TekrarDene/TekrarLabel" to="MenuButonlar/ZorMenuButonlar/ZorMenu" method="_on_tekrar_label_pressed"]
+[connection signal="pressed" from="HakkimizdaPaneli/Kapat" to="." method="_on_aciklama_kapat_pressed"]
+[connection signal="pressed" from="HakkimizdaEkrani/Geri" to="." method="_on_hakkimizda_geri_pressed"]
+[connection signal="area_entered" from="KolayMenu/MenuEkrani/Bariyer" to="KolayMenu" method="_on_bariyer_area_entered"]

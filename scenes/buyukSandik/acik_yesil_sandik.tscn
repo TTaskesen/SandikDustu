@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cnn7lip6s4ukd"]
+
+[ext_resource type="PackedScene" uid="uid://ch1xcne11jttd" path="res://scenes/buyukSandik/base_sandik.tscn" id="1_gddir"]
+[ext_resource type="Texture2D" uid="uid://b0kau5xvcmw8g" path="res://assets/Sandik3/sandikAçikYesil64.png" id="2_ec3f6"]
+
+[node name="Açik YeşilSandik" instance=ExtResource("1_gddir")]
+renk = "acik_yesil"
+
+[node name="SandikResmi" parent="." index="1"]
+texture = ExtResource("2_ec3f6")

@@ -1,0 +1,12 @@
+[gd_scene load_steps=4 format=3 uid="uid://h1p560f3vm8j"]
+
+[ext_resource type="PackedScene" uid="uid://dhyty75bs16gs" path="res://scenes/kucukSandik/base_kucuk_sandik.tscn" id="1_8oy1k"]
+[ext_resource type="Texture2D" uid="uid://dft6o42trrw86" path="res://assets/Sandik2/sandikMavi32.png" id="2_b3khy"]
+[ext_resource type="Script" path="res://scripts/oyun/kucuk_mavi_sandik.gd" id="2_vrrc8"]
+
+[node name="KucukMaviSandik" instance=ExtResource("1_8oy1k")]
+script = ExtResource("2_vrrc8")
+renk = "mavi"
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_b3khy")

@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dle46akuq8od"]
+
+[ext_resource type="PackedScene" uid="uid://ch1xcne11jttd" path="res://scenes/buyukSandik/base_sandik.tscn" id="1_iussi"]
+[ext_resource type="Texture2D" uid="uid://cxacvjgifcpqr" path="res://assets/Sandik3/sandikPembe64.png" id="2_1hiyn"]
+
+[node name="PembeSandik" instance=ExtResource("1_iussi")]
+renk = "pembe"
+
+[node name="SandikResmi" parent="." index="1"]
+texture = ExtResource("2_1hiyn")

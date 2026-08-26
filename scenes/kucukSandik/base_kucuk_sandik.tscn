@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://dhyty75bs16gs"]
+
+[ext_resource type="Texture2D" uid="uid://d2nsodx8u17bh" path="res://assets/Sandik2/sandikSiyah32.png" id="1_7y6ds"]
+[ext_resource type="Script" path="res://scripts/oyun/base_kucuk_sandik.gd" id="1_v04qh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v04qh"]
+size = Vector2(93, 94)
+
+[node name="BaseKucukSandik" type="Area2D" groups=["kucuk"]]
+script = ExtResource("1_v04qh")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2.9, 2.9)
+texture = ExtResource("1_7y6ds")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_v04qh")

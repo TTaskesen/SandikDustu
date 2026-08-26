@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://3ws34fdrpxp6"]
+
+[ext_resource type="PackedScene" uid="uid://ch1xcne11jttd" path="res://scenes/buyukSandik/base_sandik.tscn" id="1_3yhu7"]
+[ext_resource type="Texture2D" uid="uid://c3nemoteoirnm" path="res://assets/Sandik3/sandikMor64.png" id="2_3icjl"]
+
+[node name="MorSandik" instance=ExtResource("1_3yhu7")]
+renk = "mor"
+
+[node name="SandikResmi" parent="." index="1"]
+texture = ExtResource("2_3icjl")

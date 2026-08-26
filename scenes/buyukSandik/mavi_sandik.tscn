@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dptjcpsqixphj"]
+
+[ext_resource type="PackedScene" uid="uid://ch1xcne11jttd" path="res://scenes/buyukSandik/base_sandik.tscn" id="1_hjxgo"]
+[ext_resource type="Texture2D" uid="uid://b0ooldrchy8xc" path="res://assets/Sandik3/sandikMavi64.png" id="2_mo2o2"]
+
+[node name="MaviSandik" instance=ExtResource("1_hjxgo")]
+renk = "mavi"
+
+[node name="SandikResmi" parent="." index="1"]
+texture = ExtResource("2_mo2o2")

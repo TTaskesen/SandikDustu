@@ -1,0 +1,12 @@
+# Godot 4+ specific ignores
+.godot/
+/.android/
+/android/
+
+# Yanlışlıkla proje köküne kopyalanmış kullanıcı dizini/SDK dosyaları.
+/~/
+/Library/Android/sdk/
+
+# Yerel dışa aktarma çıktıları ve macOS Finder meta verileri.
+/build/
+.DS_Store

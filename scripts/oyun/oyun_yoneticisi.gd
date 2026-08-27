@@ -1,5 +1,7 @@
 extends Node2D
 
+const SeviyeVeritabani = preload("res://scripts/seviye_veritabani.gd")
+
 const SUTUN_X = [97, 287, 480]
 const SANDIK_Y = 990
 const SANDIK_SATIR_ARALIGI = 96
@@ -80,6 +82,17 @@ var son_hiz = 100
 var ipucu_label: Label
 var gecis_label: Label
 var android_alt_guvenlik_boslugu = 0.0
+var seviye_bilgi_label: Label
+var ogretici_label: Label
+var geri_bildirim_katmani: CanvasLayer
+var seviye_modu := false
+var aktif_seviye := 0
+var seviye_hedefi := 0
+var seviye_hata_toleransi := 0
+var seviye_hatalari := 0
+var aktif_renk_dizilimi: Array = []
+var seri := 0
+var egitim_aktif := false
 
 func _ready():
 	_android_guvenli_alani_hazirla()
@@ -88,6 +101,7 @@ func _ready():
 		sandiklar.get_child(i).input_event.connect(_sandik_input.bind(i))
 	_sahne_kur("kolay")
 	_bildirimleri_hazirla()
+	_oyun_hudunu_hazirla()
 
 func _android_guvenli_alani_hazirla():
 	if OS.get_name() != "Android":
@@ -104,6 +118,11 @@ func _android_guvenli_alani_hazirla():
 
 func _oyun_alani_konumu() -> Vector2:
 	return Vector2(0, OYUN_ALANI_Y - android_alt_guvenlik_boslugu)
+
+func _giris_logosunu_goster(gorunur: bool):
+	var giris_logosu = get_node_or_null("../MenuButonlar/UI/BaslangicLogo") as CanvasItem
+	if giris_logosu:
+		giris_logosu.visible = gorunur
 
 func _bildirimleri_hazirla():
 	var katman = CanvasLayer.new()
@@ -128,6 +147,57 @@ func _bildirimleri_hazirla():
 	gecis_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	gecis_label.visible = false
 	katman.add_child(gecis_label)
+
+func _oyun_hudunu_hazirla():
+	geri_bildirim_katmani = CanvasLayer.new()
+	geri_bildirim_katmani.layer = 9
+	add_child(geri_bildirim_katmani)
+	seviye_bilgi_label = Label.new()
+	seviye_bilgi_label.position = Vector2(120, 82)
+	seviye_bilgi_label.size = Vector2(336, 72)
+	seviye_bilgi_label.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
+	seviye_bilgi_label.add_theme_font_size_override("font_size", 27)
+	seviye_bilgi_label.add_theme_color_override("font_color", Color(0.94, 0.94, 0.9, 1))
+	seviye_bilgi_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	seviye_bilgi_label.visible = false
+	geri_bildirim_katmani.add_child(seviye_bilgi_label)
+	ogretici_label = Label.new()
+	ogretici_label.position = Vector2(48, 175)
+	ogretici_label.size = Vector2(480, 110)
+	ogretici_label.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
+	ogretici_label.add_theme_font_size_override("font_size", 32)
+	ogretici_label.add_theme_color_override("font_color", Color("#f4e0a2"))
+	ogretici_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ogretici_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	ogretici_label.visible = false
+	geri_bildirim_katmani.add_child(ogretici_label)
+
+func _seviye_hudunu_guncelle():
+	if not seviye_modu:
+		seviye_bilgi_label.visible = false
+		return
+	seviye_bilgi_label.text = "%d. Seviye  •  Hedef %d/%d\nHata: %d/%d" % [aktif_seviye, skor, seviye_hedefi, seviye_hatalari, seviye_hata_toleransi]
+	seviye_bilgi_label.visible = true
+
+func _puan_sicramasi(pozisyon: Vector2, metin: String, renk: Color):
+	var etiket = Label.new()
+	etiket.position = pozisyon + Vector2(-35, -55)
+	etiket.size = Vector2(70, 45)
+	etiket.text = metin
+	etiket.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
+	etiket.add_theme_font_size_override("font_size", 34)
+	etiket.add_theme_color_override("font_color", renk)
+	etiket.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	geri_bildirim_katmani.add_child(etiket)
+	var tween = create_tween()
+	tween.set_parallel()
+	tween.tween_property(etiket, "position:y", etiket.position.y - 55, 0.45)
+	tween.tween_property(etiket, "modulate:a", 0.0, 0.45)
+	tween.chain().tween_callback(etiket.queue_free)
+
+func _titreşim(veri_suresi: int):
+	if OS.get_name() == "Android" and Global.titresim_acik_mi():
+		Input.vibrate_handheld(veri_suresi)
 
 func _ipucu_goster(metin: String):
 	ipucu_label.text = metin
@@ -186,7 +256,7 @@ func _sahne_kur(zorluk_adi: String):
 	sandik_olcekleri = []
 	for i in range(9):
 		var sandik = sandiklar.get_child(i)
-		if i < dizilim.size():
+		if i < dizilim.size() and (not egitim_aktif or i == 0):
 			sandik.visible = true
 			sandik.position = dizilim[i]
 		else:
@@ -197,7 +267,7 @@ func _sahne_kur(zorluk_adi: String):
 	bariyer.position.y = -(satir_sayisi - 1) * SANDIK_SATIR_ARALIGI
 	for i in range(3):
 		var ucgen = ucgenler.get_child(i)
-		ucgen.visible = true
+		ucgen.visible = not egitim_aktif or i == 0
 		ucgen.scale = Vector2.ONE
 		ucgen.position.y = UCGEN_Y - (satir_sayisi - 1) * SANDIK_SATIR_ARALIGI
 	_secimi_temizle()
@@ -211,6 +281,14 @@ func _satir_sayisi() -> int:
 
 func _renk_sirasini_hazirla():
 	renk_sirasi = []
+	if not aktif_renk_dizilimi.is_empty():
+		for renk in aktif_renk_dizilimi:
+			for sandik in sandiklar.get_children():
+				if sandik.visible and sandik.renk == renk:
+					renk_sirasi.append(renk)
+					break
+		if not renk_sirasi.is_empty():
+			return
 	for sandik in sandiklar.get_children():
 		if sandik.visible:
 			renk_sirasi.append(sandik.renk)
@@ -224,9 +302,9 @@ func _process(delta):
 		firlatilan.position.y -= FIRLATMA_HIZI * delta
 		if firlatilan.position.y < -150:
 			if dusen_sandiklar.has(sutun):
-				_ipucu_goster("Yanlış renk!")
+				yanlis_hamle("Yanlış renk!")
 			else:
-				_ipucu_goster("Yanlış sütun!")
+				yanlis_hamle("Yanlış sütun!")
 			firlatilan.queue_free()
 			firlatilan_sandiklar.erase(sutun)
 			continue
@@ -253,6 +331,8 @@ func firlat(sutun: int):
 
 func ekrani_ac():
 	$SesTik.play()
+	_giris_logosunu_goster(true)
+	basla_menu.show()
 	var tween = _menu_tweeni()
 	tween.tween_property(basla_menu, "position", Vector2(0, 300), MENU_SURE)
 	tween.tween_property(zor_menu, "position", Vector2(576, 300), MENU_SURE)
@@ -261,24 +341,57 @@ func ekrani_ac():
 	tween.tween_property(tekrar_label, "position", Vector2(576, -150), MENU_SURE)
 	tween.tween_property(self, "position", Vector2(576, -100), MENU_SURE)
 	baslik.show()
+	seviye_bilgi_label.visible = false
+	ogretici_label.visible = false
 
 func zor_menu_ac():
 	$SesTik.play()
-	var giris_logosu = get_node_or_null("../MenuButonlar/UI/BaslangicLogo") as CanvasItem
-	if giris_logosu:
-		giris_logosu.hide()
+	_giris_logosunu_goster(true)
 	var tween = _menu_tweeni()
 	tween.tween_property(basla_menu, "position", Vector2(-576, 300), MENU_SURE)
 	tween.tween_property(zor_menu, "position", Vector2(0, 300), MENU_SURE)
 
 func oyunu_baslat(interval: float, dusme_hizi: int, zorluk_adi: String):
+	seviye_modu = false
+	aktif_seviye = 0
+	aktif_renk_dizilimi = []
+	egitim_aktif = false
+	_oyunu_baslat_ozel(interval, dusme_hizi, zorluk_adi)
+
+func baslat_seviye(seviye_no: int):
+	if not Global.seviye_acik_mi(seviye_no):
+		_ipucu_goster("Bu seviye henüz kilitli!")
+		return
+	var veri = SeviyeVeritabani.seviyeyi_al(seviye_no)
+	seviye_modu = true
+	aktif_seviye = seviye_no
+	seviye_hedefi = int(veri["hedef_skor"])
+	seviye_hata_toleransi = int(veri["hata_toleransi"])
+	seviye_hatalari = 0
+	aktif_renk_dizilimi = veri["renk_dizilimi"].duplicate()
+	egitim_aktif = not Global.ogretici_tamamlandi_mi()
+	if egitim_aktif:
+		seviye_hedefi = 1
+		seviye_hata_toleransi = 99
+		aktif_renk_dizilimi = ["acik_yesil"]
+		_oyunu_baslat_ozel(1.4, 60, "kolay")
+		ogretici_label.text = "Rengi seç, oka dokun.\nDüşen sandığı yakala!"
+		ogretici_label.visible = true
+	else:
+		_oyunu_baslat_ozel(float(veri["interval"]), int(veri["dusme_hizi"]), str(veri["zorluk"]))
+
+func _oyunu_baslat_ozel(interval: float, dusme_hizi: int, zorluk_adi: String):
 	$SesTik.play()
 	oyunu_sifirla()
+	_giris_logosunu_goster(false)
+	# Seviye merkezi ana menüden doğrudan oyun başlatabilir; menü oyun alanına taşmamalı.
+	basla_menu.hide()
 	kolay_menu.show()
 	kontrol = true
 	son_interval = interval
 	son_hiz = dusme_hizi
 	hiz = dusme_hizi
+	$Timer.wait_time = interval
 	Global.zorluk = zorluk_adi
 	_sahne_kur(zorluk_adi)
 	var tween = _menu_tweeni()
@@ -288,9 +401,13 @@ func oyunu_baslat(interval: float, dusme_hizi: int, zorluk_adi: String):
 	tween.tween_property(tekrar_label, "position", Vector2(576, -150), MENU_SURE)
 	tween.tween_property(self, "position", Vector2.ZERO, MENU_SURE)
 	baslik.hide()
+	_seviye_hudunu_guncelle()
 	kucuk_sandik_olustur()
 
 func tekrar_oyna():
+	if seviye_modu and aktif_seviye > 0:
+		baslat_seviye(aktif_seviye)
+		return
 	oyunu_baslat(son_interval, son_hiz, Global.zorluk)
 
 func oyunu_sifirla():
@@ -304,6 +421,8 @@ func oyunu_sifirla():
 	firlatilan_sandiklar.clear()
 	_secimi_temizle()
 	sayac_label.text = "0"
+	seri = 0
+	seviye_hatalari = 0
 	for c in $Projectiles.get_children():
 		c.queue_free()
 	$Timer.stop()
@@ -322,9 +441,12 @@ func oyun_sonu():
 	dusen_sandiklar.clear()
 	firlatilan_sandiklar.clear()
 	Global.rekoru_guncelle(skor)
+	Global.basarimlari_guncelle()
 	yuksek_skor_label.text = "Rekor: %d" % Global.rekor
 	$SesKaybetme.play()
 	$Timer.stop()
+	seviye_bilgi_label.visible = false
+	ogretici_label.visible = false
 	var tween = _menu_tweeni()
 	tween.tween_property(tekrar_label, "position", Vector2(30, 400), MENU_SURE)
 	tween.tween_property(sayac, "position", Vector2(0, -430), MENU_SURE)
@@ -363,6 +485,7 @@ func _ana_menuye_don():
 	Global.rekoru_guncelle(skor)
 	yuksek_skor_label.text = "Rekor: %d" % Global.rekor
 	var tween = _menu_tweeni()
+	basla_menu.show()
 	tween.tween_property(basla_menu, "position", Vector2(0, 300), MENU_SURE)
 	tween.tween_property(zor_menu, "position", Vector2(576, 300), MENU_SURE)
 	tween.tween_property(kolay_menu, "position", Vector2(0, 0), MENU_SURE)
@@ -370,6 +493,8 @@ func _ana_menuye_don():
 	tween.tween_property(tekrar_label, "position", Vector2(576, -150), MENU_SURE)
 	tween.tween_property(self, "position", Vector2(576, -100), MENU_SURE)
 	baslik.show()
+	seviye_bilgi_label.visible = false
+	ogretici_label.visible = false
 
 func kucuk_sandik_olustur():
 	if not kontrol or not oyun_devam:
@@ -378,7 +503,8 @@ func kucuk_sandik_olustur():
 		return
 	if renk_sirasi.is_empty():
 		_renk_sirasini_hazirla()
-	var sutun = randi_range(0, 2)
+	# Öğreticide tek üçgen görünür; düşen sandık da aynı sütunda olmalı.
+	var sutun = 0 if egitim_aktif else randi_range(0, 2)
 	var renk = renk_sirasi.pop_back()
 	var dusen = kucuk_sahneler[renk].instantiate()
 	dusen.speed = hiz
@@ -391,28 +517,81 @@ func cozumle(sutun: int):
 	var dusen = dusen_sandiklar.get(sutun)
 	if firlatilan and dusen and firlatilan.renk == dusen.renk:
 		skor += 1
+		seri += 1
 		sayac_label.text = str(skor)
 		$SesYakalama.play()
+		_titreşim(18)
+		_puan_sicramasi(dusen.global_position, "+1", RENK_RENKLERI.get(dusen.renk, Color.WHITE))
+		Global.sandik_yakalandi(seri)
+		Global.gunluk_hatasiz_seri(seri)
 		if Global.rekoru_guncelle(skor):
 			yuksek_skor_label.text = "Rekor: %d" % Global.rekor
-		if aktif_zorluk == "kolay" and skor >= 15:
-			_gecis_bildirimi("Orta'ya Geçtin!")
-			call_deferred("oyunu_baslat", 2.0, 140, "orta")
-			return
-		if aktif_zorluk == "orta" and skor >= 30:
-			_gecis_bildirimi("Zor'a Geçtin!")
-			call_deferred("oyunu_baslat", 1.5, 190, "zor")
-			return
-		if aktif_zorluk == "zor" and skor >= 100:
-			_oyun_bitti_ekrani()
-			return
+		Global.basarimlari_guncelle()
+		_seviye_hudunu_guncelle()
 		_partikul_patlat(dusen.global_position, RENK_RENKLERI.get(dusen.renk, Color.WHITE))
 		dusen.queue_free()
 		firlatilan.queue_free()
 		dusen_sandiklar.erase(sutun)
 		firlatilan_sandiklar.erase(sutun)
+		if egitim_aktif:
+			Global.ogreticiyi_tamamla()
+			egitim_aktif = false
+			ogretici_label.visible = false
+			_ipucu_goster("Harika! Şimdi seviyeye geçiyoruz.")
+			call_deferred("baslat_seviye", aktif_seviye)
+			return
+		if seviye_modu and skor >= seviye_hedefi:
+			_seviye_tamamla()
+			return
+		if not seviye_modu and aktif_zorluk == "kolay" and skor >= 15:
+			_gecis_bildirimi("Orta'ya Geçtin!")
+			call_deferred("oyunu_baslat", 2.0, 100, "orta")
+			return
+		if not seviye_modu and aktif_zorluk == "orta" and skor >= 30:
+			_gecis_bildirimi("Zor'a Geçtin!")
+			call_deferred("oyunu_baslat", 1.5, 90, "zor")
+			return
+		if not seviye_modu and aktif_zorluk == "zor" and skor >= 100:
+			_oyun_bitti_ekrani()
+			return
 		if dusen_sandiklar.is_empty():
 			$Timer.start()
+
+func yanlis_hamle(mesaj: String):
+	seri = 0
+	_ipucu_goster(mesaj)
+	_titreşim(35)
+
+func sandik_kacti():
+	if not kontrol or not oyun_devam:
+		return
+	seri = 0
+	seviye_hatalari += 1
+	_titreşim(45)
+	if seviye_modu and seviye_hatalari <= seviye_hata_toleransi:
+		_ipucu_goster("Hata %d/%d" % [seviye_hatalari, seviye_hata_toleransi])
+		for dusen in dusen_sandiklar.values():
+			dusen.queue_free()
+		dusen_sandiklar.clear()
+		_seviye_hudunu_guncelle()
+		$Timer.start()
+		return
+	oyun_sonu()
+
+func _seviye_tamamla():
+	kontrol = false
+	oyun_devam = false
+	$Timer.stop()
+	var yeni_basarimlar = Global.seviye_tamamla(aktif_seviye, skor, seviye_hatalari == 0)
+	var odul = int(SeviyeVeritabani.seviyeyi_al(aktif_seviye)["odul"])
+	_gecis_bildirimi("%d. seviye tamam! +%d yıldız" % [aktif_seviye, odul])
+	if not yeni_basarimlar.is_empty():
+		_ipucu_goster("Başarım açıldı: %s" % yeni_basarimlar[0]["ad"])
+	seviye_bilgi_label.visible = false
+	if aktif_seviye < SeviyeVeritabani.TOPLAM_SEVIYE:
+		get_tree().create_timer(1.4).timeout.connect(func(): baslat_seviye(aktif_seviye + 1))
+	else:
+		get_tree().create_timer(1.4).timeout.connect(_ana_menuye_don)
 
 func _menu_tweeni() -> Tween:
 	var tween = create_tween()

@@ -131,8 +131,7 @@ texture_filter = 1
 layout_mode = 2
 theme = SubResource("Theme_cwqvt")
 theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
-text = "Ayarlar (Yakında)"
-disabled = true
+text = "İlerleme"
 flat = true
 
 [node name="Açıklama" type="Button" parent="MenuButonlar/BaslaMenuButonlar/BaslaMenu"]
@@ -149,6 +148,14 @@ layout_mode = 2
 theme = SubResource("Theme_cwqvt")
 theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
 text = "Hakkımızda"
+flat = true
+
+[node name="Gizlilik" type="Button" parent="MenuButonlar/BaslaMenuButonlar/BaslaMenu"]
+texture_filter = 1
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Gizlilik"
 flat = true
 
 [node name="Çıkış" type="Button" parent="MenuButonlar/BaslaMenuButonlar/BaslaMenu"]
@@ -400,8 +407,10 @@ flat = true
 
 [connection signal="pressed" from="MenuButonlar/Sayac/GeriButon" to="MenuButonlar/ZorMenuButonlar/ZorMenu" method="_on_geri_buton_pressed"]
 [connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Basla" to="MenuButonlar/BaslaMenuButonlar/BaslaMenu" method="_on_basla_pressed"]
+[connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Ayarlar" to="." method="_on_ilerleme_pressed"]
 [connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Açıklama" to="." method="_on_aciklama_pressed"]
 [connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Hakkımızda" to="." method="_on_hakkimizda_pressed"]
+[connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Gizlilik" to="." method="_on_gizlilik_pressed"]
 [connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Çıkış" to="." method="_on_çıkış_pressed"]
 [connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Kolay" to="MenuButonlar/Sayac" method="_on_kolay_pressed"]
 [connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Orta" to="KolayMenu" method="_on_orta_pressed"]

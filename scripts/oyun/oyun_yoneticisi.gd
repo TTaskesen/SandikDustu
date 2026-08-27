@@ -1,17 +1,29 @@
 extends Node2D
 
 const SUTUN_X = [97, 287, 480]
-const SANDIK_SUTUNLAR = {
-	"kolay": [96, 288, 480],
-	"orta": [48, 144, 240, 336, 432, 528],
-	"zor": [32, 96, 160, 224, 288, 352, 416, 480, 544],
+const SANDIK_Y = 990
+const SANDIK_SATIR_ARALIGI = 96
+const OYUN_ALANI_Y = -232.0
+const ANDROID_MIN_ALT_GUVENLIK_BOSLUGU = 72.0
+const SANDIK_DIZILIMLERI = {
+	"kolay": [
+		Vector2(96, SANDIK_Y), Vector2(288, SANDIK_Y), Vector2(480, SANDIK_Y),
+	],
+	"orta": [
+		Vector2(96, SANDIK_Y - SANDIK_SATIR_ARALIGI), Vector2(288, SANDIK_Y - SANDIK_SATIR_ARALIGI), Vector2(480, SANDIK_Y - SANDIK_SATIR_ARALIGI),
+		Vector2(96, SANDIK_Y), Vector2(288, SANDIK_Y), Vector2(480, SANDIK_Y),
+	],
+	"zor": [
+		Vector2(96, SANDIK_Y - SANDIK_SATIR_ARALIGI * 2), Vector2(288, SANDIK_Y - SANDIK_SATIR_ARALIGI * 2), Vector2(480, SANDIK_Y - SANDIK_SATIR_ARALIGI * 2),
+		Vector2(96, SANDIK_Y - SANDIK_SATIR_ARALIGI), Vector2(288, SANDIK_Y - SANDIK_SATIR_ARALIGI), Vector2(480, SANDIK_Y - SANDIK_SATIR_ARALIGI),
+		Vector2(96, SANDIK_Y), Vector2(288, SANDIK_Y), Vector2(480, SANDIK_Y),
+	],
 }
 const SANDIK_OLCEK = {
 	"kolay": 1.0,
-	"orta": 0.51,
-	"zor": 0.34,
+	"orta": 1.0,
+	"zor": 1.0,
 }
-const SANDIK_Y = 990
 const UCGEN_Y = 892
 const MENU_SURE = 0.6
 const FIRLATMA_HIZI = 600.0
@@ -51,6 +63,7 @@ var kucuk_sahneler = {
 @onready var tekrar_label: Button = $"../MenuButonlar/TekrarDene/TekrarLabel"
 @onready var sandiklar: Node2D = $"../KolayMenu/MenuEkrani/Sandiklar64"
 @onready var ucgenler: Node2D = $"../KolayMenu/MenuEkrani/Üçgenler"
+@onready var bariyer: Area2D = $"../KolayMenu/MenuEkrani/Bariyer"
 
 var kontrol = false
 var oyun_devam = true
@@ -66,13 +79,31 @@ var son_interval = 3.0
 var son_hiz = 100
 var ipucu_label: Label
 var gecis_label: Label
+var android_alt_guvenlik_boslugu = 0.0
 
 func _ready():
+	_android_guvenli_alani_hazirla()
 	yuksek_skor_label.text = "Rekor: %d" % Global.rekor
 	for i in range(9):
 		sandiklar.get_child(i).input_event.connect(_sandik_input.bind(i))
 	_sahne_kur("kolay")
 	_bildirimleri_hazirla()
+
+func _android_guvenli_alani_hazirla():
+	if OS.get_name() != "Android":
+		android_alt_guvenlik_boslugu = 0.0
+		return
+	var ekran_boyutu = DisplayServer.screen_get_size()
+	var guvenli_alan = DisplayServer.get_display_safe_area()
+	var hesaplanan_bosluk = 0.0
+	if ekran_boyutu.y > 0:
+		var fiziksel_alt_bosluk = maxf(0.0, ekran_boyutu.y - guvenli_alan.end.y)
+		hesaplanan_bosluk = fiziksel_alt_bosluk * get_viewport().get_visible_rect().size.y / ekran_boyutu.y
+	# Bazı Android gezinme çubukları güvenli alan bilgisinde görünmez; seçilebilir alanı yine koru.
+	android_alt_guvenlik_boslugu = maxf(ANDROID_MIN_ALT_GUVENLIK_BOSLUGU, hesaplanan_bosluk)
+
+func _oyun_alani_konumu() -> Vector2:
+	return Vector2(0, OYUN_ALANI_Y - android_alt_guvenlik_boslugu)
 
 func _bildirimleri_hazirla():
 	var katman = CanvasLayer.new()
@@ -150,30 +181,39 @@ func _secimi_temizle():
 
 func _sahne_kur(zorluk_adi: String):
 	aktif_zorluk = zorluk_adi
-	var sutunlar = SANDIK_SUTUNLAR[zorluk_adi]
+	var dizilim = SANDIK_DIZILIMLERI[zorluk_adi]
 	var olcek = SANDIK_OLCEK[zorluk_adi]
 	sandik_olcekleri = []
 	for i in range(9):
 		var sandik = sandiklar.get_child(i)
-		if i < sutunlar.size():
+		if i < dizilim.size():
 			sandik.visible = true
-			sandik.position = Vector2(sutunlar[i], SANDIK_Y)
+			sandik.position = dizilim[i]
 		else:
 			sandik.visible = false
 		sandik_olcekleri.append(olcek)
+	var satir_sayisi = _satir_sayisi()
+	# Kaybetme sınırı, üçgenlerin altında sabit kalır; ek satırlarda birlikte yukarı taşınır.
+	bariyer.position.y = -(satir_sayisi - 1) * SANDIK_SATIR_ARALIGI
 	for i in range(3):
-		ucgenler.get_child(i).visible = true
-		ucgenler.get_child(i).scale = Vector2.ONE
+		var ucgen = ucgenler.get_child(i)
+		ucgen.visible = true
+		ucgen.scale = Vector2.ONE
+		ucgen.position.y = UCGEN_Y - (satir_sayisi - 1) * SANDIK_SATIR_ARALIGI
 	_secimi_temizle()
 	_renk_sirasini_hazirla()
 
 func _cesit_sayisi() -> int:
-	return SANDIK_SUTUNLAR[aktif_zorluk].size()
+	return SANDIK_DIZILIMLERI[aktif_zorluk].size()
+
+func _satir_sayisi() -> int:
+	return int(_cesit_sayisi() / 3.0)
 
 func _renk_sirasini_hazirla():
 	renk_sirasi = []
-	for i in range(_cesit_sayisi()):
-		renk_sirasi.append(sandiklar.get_child(i).renk)
+	for sandik in sandiklar.get_children():
+		if sandik.visible:
+			renk_sirasi.append(sandik.renk)
 	renk_sirasi.shuffle()
 
 func _process(delta):
@@ -207,7 +247,7 @@ func firlat(sutun: int):
 	var firlatilan = kucuk_sahneler[secili_renk].instantiate()
 	firlatilan.speed = 0
 	firlatilan.firlatildi = true
-	firlatilan.position = Vector2(SUTUN_X[sutun], UCGEN_Y)
+	firlatilan.position = ucgenler.get_child(sutun).global_position
 	$Projectiles.add_child(firlatilan)
 	firlatilan_sandiklar[sutun] = firlatilan
 
@@ -224,6 +264,9 @@ func ekrani_ac():
 
 func zor_menu_ac():
 	$SesTik.play()
+	var giris_logosu = get_node_or_null("../MenuButonlar/UI/BaslangicLogo") as CanvasItem
+	if giris_logosu:
+		giris_logosu.hide()
 	var tween = _menu_tweeni()
 	tween.tween_property(basla_menu, "position", Vector2(-576, 300), MENU_SURE)
 	tween.tween_property(zor_menu, "position", Vector2(0, 300), MENU_SURE)
@@ -231,6 +274,7 @@ func zor_menu_ac():
 func oyunu_baslat(interval: float, dusme_hizi: int, zorluk_adi: String):
 	$SesTik.play()
 	oyunu_sifirla()
+	kolay_menu.show()
 	kontrol = true
 	son_interval = interval
 	son_hiz = dusme_hizi
@@ -239,7 +283,7 @@ func oyunu_baslat(interval: float, dusme_hizi: int, zorluk_adi: String):
 	_sahne_kur(zorluk_adi)
 	var tween = _menu_tweeni()
 	tween.tween_property(zor_menu, "position", Vector2(576, 300), MENU_SURE)
-	tween.tween_property(kolay_menu, "position", Vector2(0, -232), MENU_SURE)
+	tween.tween_property(kolay_menu, "position", _oyun_alani_konumu(), MENU_SURE)
 	tween.tween_property(sayac, "position", Vector2(0, 430), MENU_SURE)
 	tween.tween_property(tekrar_label, "position", Vector2(576, -150), MENU_SURE)
 	tween.tween_property(self, "position", Vector2.ZERO, MENU_SURE)
@@ -252,6 +296,8 @@ func tekrar_oyna():
 func oyunu_sifirla():
 	oyun_devam = true
 	kontrol = false
+	# Geri ile ana menüye dönüldüğünde önceki zorluk düzeni görünür kalmasın.
+	kolay_menu.hide()
 	skor = 0
 	renk_sirasi = []
 	dusen_sandiklar.clear()
@@ -267,6 +313,7 @@ func oyun_sonu():
 		return
 	oyun_devam = false
 	kontrol = false
+	kolay_menu.hide()
 	_secimi_temizle()
 	for sutun in dusen_sandiklar.keys():
 		dusen_sandiklar[sutun].queue_free()

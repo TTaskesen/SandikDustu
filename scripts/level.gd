@@ -6,6 +6,7 @@ extends Node2D
 
 func _ready():
 	_arkaplani_kur()
+	_baslangic_logosunu_kur()
 
 func _arkaplani_kur():
 	var arkaplan = TextureRect.new()
@@ -22,6 +23,26 @@ func _arkaplani_kur():
 	arkaplan.texture = doku
 	add_child(arkaplan)
 	move_child(arkaplan, 0)
+
+func _baslangic_logosunu_kur():
+	var logo = TextureRect.new()
+	logo.name = "BaslangicLogo"
+	logo.position = Vector2(223, 28)
+	logo.size = Vector2(130, 130)
+	logo.texture = preload("res://logo.png")
+	logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	logo.pivot_offset = logo.size / 2.0
+	logo.modulate.a = 0.0
+	logo.scale = Vector2(0.55, 0.55)
+	$MenuButonlar/UI.add_child(logo)
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(logo, "modulate:a", 1.0, 0.35)
+	tween.parallel().tween_property(logo, "scale", Vector2.ONE, 0.45)
+	tween.tween_property(logo, "scale", Vector2(1.06, 1.06), 0.12)
+	tween.tween_property(logo, "scale", Vector2.ONE, 0.12)
 
 func _on_çıkış_pressed():
 	get_tree().quit()

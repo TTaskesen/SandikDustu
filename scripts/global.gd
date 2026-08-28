@@ -3,19 +3,22 @@ extends Node
 const REKOR_DOSYASI = "user://rekor.save"
 const ILERLEME_DOSYASI = "user://sandik_dustu_ilerleme.json"
 const SeviyeVeritabani = preload("res://scripts/seviye_veritabani.gd")
+const DilYoneticisi = preload("res://scripts/dil_yoneticisi.gd")
+
+signal dil_degisti(kod: String)
 
 const BASARIMLAR = [
-	{"id": "rekor_10", "ad": "İyi Başlangıç", "aciklama": "10 puanlık rekor yap.", "tur": "rekor", "hedef": 10},
-	{"id": "seri_5", "ad": "Renk Ustası", "aciklama": "5 sandığı arka arkaya yakala.", "tur": "seri", "hedef": 5},
-	{"id": "hatasiz", "ad": "Kusursuz", "aciklama": "Bir seviyeyi hatasız tamamla.", "tur": "hatasiz", "hedef": 1},
-	{"id": "toplam_50", "ad": "Sandık Avcısı", "aciklama": "Toplam 50 sandık yakala.", "tur": "toplam", "hedef": 50},
-	{"id": "seviye_10", "ad": "Yolculuk Başladı", "aciklama": "10 seviye tamamla.", "tur": "seviye", "hedef": 10},
+	{"id": "rekor_10", "metin": "achievement_start", "aciklama": "achievement_start_desc", "tur": "rekor", "hedef": 10},
+	{"id": "seri_5", "metin": "achievement_master", "aciklama": "achievement_master_desc", "tur": "seri", "hedef": 5},
+	{"id": "hatasiz", "metin": "achievement_flawless", "aciklama": "achievement_flawless_desc", "tur": "hatasiz", "hedef": 1},
+	{"id": "toplam_50", "metin": "achievement_hunter", "aciklama": "achievement_hunter_desc", "tur": "toplam", "hedef": 50},
+	{"id": "seviye_10", "metin": "achievement_journey", "aciklama": "achievement_journey_desc", "tur": "seviye", "hedef": 10},
 ]
 
 const TEMALAR = [
-	{"id": "klasik", "ad": "Klasik", "fiyat": 0, "ust": Color("#24355c"), "alt": Color("#10182b")},
-	{"id": "gece", "ad": "Gece Mavisi", "fiyat": 30, "ust": Color("#16213e"), "alt": Color("#090d1b")},
-	{"id": "gunbatimi", "ad": "Günbatımı", "fiyat": 60, "ust": Color("#5d315f"), "alt": Color("#1b1634")},
+	{"id": "klasik", "metin": "theme_classic", "fiyat": 0, "ust": Color("#24355c"), "alt": Color("#10182b")},
+	{"id": "gece", "metin": "theme_night", "fiyat": 30, "ust": Color("#16213e"), "alt": Color("#090d1b")},
+	{"id": "gunbatimi", "metin": "theme_sunset", "fiyat": 60, "ust": Color("#5d315f"), "alt": Color("#1b1634")},
 ]
 
 # İleride Play Games/çevrimiçi liderlik tablosu eklenirse bu yerel istatistikler
@@ -44,7 +47,7 @@ func _varsayilan_ilerleme() -> Dictionary:
 		"kozmetik_para": 0,
 		"acik_temalar": ["klasik"],
 		"secili_tema": "klasik",
-		"ayarlar": {"titresim": true},
+		"ayarlar": {"titresim": true, "dil": DilYoneticisi.VARSAYILAN_DIL},
 	}
 
 func rekoru_guncelle(skor: int) -> bool:
@@ -89,6 +92,9 @@ func _kayit_yapisini_duzelt():
 			ilerleme[anahtar] = varsayilan[anahtar]
 	if not ilerleme["ayarlar"] is Dictionary:
 		ilerleme["ayarlar"] = varsayilan["ayarlar"]
+	for ayar_anahtari in varsayilan["ayarlar"]:
+		if not ilerleme["ayarlar"].has(ayar_anahtari):
+			ilerleme["ayarlar"][ayar_anahtari] = varsayilan["ayarlar"][ayar_anahtari]
 	if not ilerleme["gunluk"] is Dictionary:
 		ilerleme["gunluk"] = varsayilan["gunluk"]
 
@@ -158,9 +164,9 @@ func _gunluk_gorevleri_yenile():
 	var sayi = abs(bugun.hash())
 	gunluk["tarih"] = bugun
 	gunluk["gorevler"] = [
-		{"id": "yakala", "tur": "yakala", "metin": "%d sandık yakala" % (20 + sayi % 11), "hedef": 20 + sayi % 11, "ilerleme": 0, "odul": 8, "tamamlandi": false},
-		{"id": "hatasiz", "tur": "hatasiz_seri", "metin": "%d puanı hata yapmadan al" % (5 + sayi % 6), "hedef": 5 + sayi % 6, "ilerleme": 0, "odul": 10, "tamamlandi": false},
-		{"id": "seviye", "tur": "seviye", "metin": "Bir seviyeyi tamamla", "hedef": 1, "ilerleme": 0, "odul": 12, "tamamlandi": false},
+		{"id": "yakala", "tur": "yakala", "metin": "daily_catch", "hedef": 20 + sayi % 11, "ilerleme": 0, "odul": 8, "tamamlandi": false},
+		{"id": "hatasiz", "tur": "hatasiz_seri", "metin": "daily_streak", "hedef": 5 + sayi % 6, "ilerleme": 0, "odul": 10, "tamamlandi": false},
+		{"id": "seviye", "tur": "seviye", "metin": "daily_level", "hedef": 1, "ilerleme": 0, "odul": 12, "tamamlandi": false},
 	]
 
 func gunluk_ilerlet(tur: String, miktar: int):
@@ -201,6 +207,45 @@ func titresimi_degistir() -> bool:
 	ilerleme["ayarlar"]["titresim"] = not titresim_acik_mi()
 	kaydet_ilerleme()
 	return titresim_acik_mi()
+
+func dil_kodu() -> String:
+	var kod := str(ilerleme.get("ayarlar", {}).get("dil", DilYoneticisi.VARSAYILAN_DIL))
+	for dil in DilYoneticisi.DILLER:
+		if dil["kod"] == kod:
+			return kod
+	return DilYoneticisi.VARSAYILAN_DIL
+
+func dili_ayarla(kod: String):
+	for dil in DilYoneticisi.DILLER:
+		if dil["kod"] == kod:
+			ilerleme["ayarlar"]["dil"] = kod
+			kaydet_ilerleme()
+			dil_degisti.emit(kod)
+			return
+
+func cevir(anahtar: String, degerler: Dictionary = {}) -> String:
+	return DilYoneticisi.cevir(dil_kodu(), anahtar, degerler)
+
+func rtl_mi() -> bool:
+	return DilYoneticisi.rtl_mi(dil_kodu())
+
+func basarim_adi(basarim: Dictionary) -> String:
+	return cevir(str(basarim.get("metin", "")))
+
+func basarim_aciklamasi(basarim: Dictionary) -> String:
+	return cevir(str(basarim.get("aciklama", "")))
+
+func tema_adi(tema: Dictionary) -> String:
+	return cevir(str(tema.get("metin", "")))
+
+func gunluk_gorev_metni(gorev: Dictionary) -> String:
+	var anahtar := str(gorev.get("metin", ""))
+	if not anahtar.begins_with("daily_"):
+		match str(gorev.get("tur", "")):
+			"yakala": anahtar = "daily_catch"
+			"hatasiz_seri": anahtar = "daily_streak"
+			"seviye": anahtar = "daily_level"
+	return cevir(anahtar, {"target": int(gorev.get("hedef", 0))})
 
 func yerel_verileri_sifirla() -> bool:
 	# Bu işlem yalnızca oyuncunun uygulama içinden ikinci kez onaylamasıyla çağrılır.

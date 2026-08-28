@@ -96,12 +96,25 @@ var egitim_aktif := false
 
 func _ready():
 	_android_guvenli_alani_hazirla()
-	yuksek_skor_label.text = "Rekor: %d" % Global.rekor
+	Global.dil_degisti.connect(_on_dil_degisti)
+	_yuksek_skoru_yenile()
 	for i in range(9):
 		sandiklar.get_child(i).input_event.connect(_sandik_input.bind(i))
 	_sahne_kur("kolay")
 	_bildirimleri_hazirla()
 	_oyun_hudunu_hazirla()
+
+func _t(anahtar: String, degerler: Dictionary = {}) -> String:
+	return Global.cevir(anahtar, degerler)
+
+func _yuksek_skoru_yenile():
+	yuksek_skor_label.text = _t("best_score", {"score": Global.rekor})
+
+func _on_dil_degisti(_kod: String):
+	_yuksek_skoru_yenile()
+	_seviye_hudunu_guncelle()
+	if egitim_aktif:
+		ogretici_label.text = _t("tutorial")
 
 func _android_guvenli_alani_hazirla():
 	if OS.get_name() != "Android":
@@ -123,6 +136,9 @@ func _giris_logosunu_goster(gorunur: bool):
 	var giris_logosu = get_node_or_null("../MenuButonlar/UI/BaslangicLogo") as CanvasItem
 	if giris_logosu:
 		giris_logosu.visible = gorunur
+	var dil_sekmeleri = get_node_or_null("../MenuButonlar/UI/DilSekmeleri") as CanvasItem
+	if dil_sekmeleri:
+		dil_sekmeleri.visible = gorunur
 
 func _bildirimleri_hazirla():
 	var katman = CanvasLayer.new()
@@ -176,7 +192,7 @@ func _seviye_hudunu_guncelle():
 	if not seviye_modu:
 		seviye_bilgi_label.visible = false
 		return
-	seviye_bilgi_label.text = "%d. Seviye  •  Hedef %d/%d\nHata: %d/%d" % [aktif_seviye, skor, seviye_hedefi, seviye_hatalari, seviye_hata_toleransi]
+	seviye_bilgi_label.text = _t("level_hud", {"level": aktif_seviye, "score": skor, "goal": seviye_hedefi, "mistakes": seviye_hatalari, "allowed": seviye_hata_toleransi})
 	seviye_bilgi_label.visible = true
 
 func _puan_sicramasi(pozisyon: Vector2, metin: String, renk: Color):
@@ -302,9 +318,9 @@ func _process(delta):
 		firlatilan.position.y -= FIRLATMA_HIZI * delta
 		if firlatilan.position.y < -150:
 			if dusen_sandiklar.has(sutun):
-				yanlis_hamle("Yanlış renk!")
+				yanlis_hamle(_t("wrong_color"))
 			else:
-				yanlis_hamle("Yanlış sütun!")
+				yanlis_hamle(_t("wrong_column"))
 			firlatilan.queue_free()
 			firlatilan_sandiklar.erase(sutun)
 			continue
@@ -318,7 +334,7 @@ func firlat(sutun: int):
 	if not kontrol or not oyun_devam:
 		return
 	if secili_renk == "":
-		_ipucu_goster("Önce bir renk seç!")
+		_ipucu_goster(_t("choose_color"))
 		return
 	if firlatilan_sandiklar.has(sutun):
 		return
@@ -334,8 +350,8 @@ func ekrani_ac():
 	_giris_logosunu_goster(true)
 	basla_menu.show()
 	var tween = _menu_tweeni()
-	tween.tween_property(basla_menu, "position", Vector2(0, 300), MENU_SURE)
-	tween.tween_property(zor_menu, "position", Vector2(576, 300), MENU_SURE)
+	tween.tween_property(basla_menu, "position", Vector2(0, 320), MENU_SURE)
+	tween.tween_property(zor_menu, "position", Vector2(576, 320), MENU_SURE)
 	tween.tween_property(kolay_menu, "position", Vector2(0, 0), MENU_SURE)
 	tween.tween_property(sayac, "position", Vector2(0, -430), MENU_SURE)
 	tween.tween_property(tekrar_label, "position", Vector2(576, -150), MENU_SURE)
@@ -348,8 +364,8 @@ func zor_menu_ac():
 	$SesTik.play()
 	_giris_logosunu_goster(true)
 	var tween = _menu_tweeni()
-	tween.tween_property(basla_menu, "position", Vector2(-576, 300), MENU_SURE)
-	tween.tween_property(zor_menu, "position", Vector2(0, 300), MENU_SURE)
+	tween.tween_property(basla_menu, "position", Vector2(-576, 320), MENU_SURE)
+	tween.tween_property(zor_menu, "position", Vector2(0, 320), MENU_SURE)
 
 func oyunu_baslat(interval: float, dusme_hizi: int, zorluk_adi: String):
 	seviye_modu = false
@@ -360,7 +376,7 @@ func oyunu_baslat(interval: float, dusme_hizi: int, zorluk_adi: String):
 
 func baslat_seviye(seviye_no: int):
 	if not Global.seviye_acik_mi(seviye_no):
-		_ipucu_goster("Bu seviye henüz kilitli!")
+		_ipucu_goster(_t("level_locked"))
 		return
 	var veri = SeviyeVeritabani.seviyeyi_al(seviye_no)
 	seviye_modu = true
@@ -375,7 +391,7 @@ func baslat_seviye(seviye_no: int):
 		seviye_hata_toleransi = 99
 		aktif_renk_dizilimi = ["acik_yesil"]
 		_oyunu_baslat_ozel(1.4, 60, "kolay")
-		ogretici_label.text = "Rengi seç, oka dokun.\nDüşen sandığı yakala!"
+		ogretici_label.text = _t("tutorial")
 		ogretici_label.visible = true
 	else:
 		_oyunu_baslat_ozel(float(veri["interval"]), int(veri["dusme_hizi"]), str(veri["zorluk"]))
@@ -395,7 +411,7 @@ func _oyunu_baslat_ozel(interval: float, dusme_hizi: int, zorluk_adi: String):
 	Global.zorluk = zorluk_adi
 	_sahne_kur(zorluk_adi)
 	var tween = _menu_tweeni()
-	tween.tween_property(zor_menu, "position", Vector2(576, 300), MENU_SURE)
+	tween.tween_property(zor_menu, "position", Vector2(576, 320), MENU_SURE)
 	tween.tween_property(kolay_menu, "position", _oyun_alani_konumu(), MENU_SURE)
 	tween.tween_property(sayac, "position", Vector2(0, 430), MENU_SURE)
 	tween.tween_property(tekrar_label, "position", Vector2(576, -150), MENU_SURE)
@@ -442,7 +458,7 @@ func oyun_sonu():
 	firlatilan_sandiklar.clear()
 	Global.rekoru_guncelle(skor)
 	Global.basarimlari_guncelle()
-	yuksek_skor_label.text = "Rekor: %d" % Global.rekor
+	_yuksek_skoru_yenile()
 	$SesKaybetme.play()
 	$Timer.stop()
 	seviye_bilgi_label.visible = false
@@ -451,7 +467,7 @@ func oyun_sonu():
 	tween.tween_property(tekrar_label, "position", Vector2(30, 400), MENU_SURE)
 	tween.tween_property(sayac, "position", Vector2(0, -430), MENU_SURE)
 	tween.tween_property(kolay_menu, "position", Vector2(0, 0), MENU_SURE)
-	tween.tween_property(zor_menu, "position", Vector2(576, 300), MENU_SURE)
+	tween.tween_property(zor_menu, "position", Vector2(576, 320), MENU_SURE)
 	tween.tween_property(self, "position", Vector2(576, -100), MENU_SURE)
 
 func _oyun_bitti_ekrani():
@@ -466,7 +482,7 @@ func _oyun_bitti_ekrani():
 	firlatilan_sandiklar.clear()
 	$Timer.stop()
 	$SesGecis.play()
-	gecis_label.text = "OYUN BİTTİ!!!!!"
+	gecis_label.text = _t("game_over")
 	gecis_label.add_theme_font_size_override("font_size", 50)
 	gecis_label.add_theme_color_override("font_color", Color(0.96, 0.28, 0.22, 1))
 	gecis_label.modulate.a = 0.0
@@ -483,11 +499,11 @@ func _ana_menuye_don():
 	gecis_label.add_theme_font_size_override("font_size", 72)
 	gecis_label.add_theme_color_override("font_color", Color(0.95, 0.83, 0.4, 1))
 	Global.rekoru_guncelle(skor)
-	yuksek_skor_label.text = "Rekor: %d" % Global.rekor
+	_yuksek_skoru_yenile()
 	var tween = _menu_tweeni()
 	basla_menu.show()
-	tween.tween_property(basla_menu, "position", Vector2(0, 300), MENU_SURE)
-	tween.tween_property(zor_menu, "position", Vector2(576, 300), MENU_SURE)
+	tween.tween_property(basla_menu, "position", Vector2(0, 320), MENU_SURE)
+	tween.tween_property(zor_menu, "position", Vector2(576, 320), MENU_SURE)
 	tween.tween_property(kolay_menu, "position", Vector2(0, 0), MENU_SURE)
 	tween.tween_property(sayac, "position", Vector2(0, -430), MENU_SURE)
 	tween.tween_property(tekrar_label, "position", Vector2(576, -150), MENU_SURE)
@@ -525,7 +541,7 @@ func cozumle(sutun: int):
 		Global.sandik_yakalandi(seri)
 		Global.gunluk_hatasiz_seri(seri)
 		if Global.rekoru_guncelle(skor):
-			yuksek_skor_label.text = "Rekor: %d" % Global.rekor
+			_yuksek_skoru_yenile()
 		Global.basarimlari_guncelle()
 		_seviye_hudunu_guncelle()
 		_partikul_patlat(dusen.global_position, RENK_RENKLERI.get(dusen.renk, Color.WHITE))
@@ -537,19 +553,19 @@ func cozumle(sutun: int):
 			Global.ogreticiyi_tamamla()
 			egitim_aktif = false
 			ogretici_label.visible = false
-			_ipucu_goster("Harika! Şimdi seviyeye geçiyoruz.")
+			_ipucu_goster(_t("great_next"))
 			call_deferred("baslat_seviye", aktif_seviye)
 			return
 		if seviye_modu and skor >= seviye_hedefi:
 			_seviye_tamamla()
 			return
 		if not seviye_modu and aktif_zorluk == "kolay" and skor >= 15:
-			_gecis_bildirimi("Orta'ya Geçtin!")
-			call_deferred("oyunu_baslat", 2.0, 150, "orta")
+			_gecis_bildirimi(_t("medium_unlocked"))
+			call_deferred("oyunu_baslat", 1.0, 150, "orta")
 			return
 		if not seviye_modu and aktif_zorluk == "orta" and skor >= 30:
-			_gecis_bildirimi("Zor'a Geçtin!")
-			call_deferred("oyunu_baslat", 1.5, 100, "zor")
+			_gecis_bildirimi(_t("hard_unlocked"))
+			call_deferred("oyunu_baslat", 0.75, 100, "zor")
 			return
 		if not seviye_modu and aktif_zorluk == "zor" and skor >= 100:
 			_oyun_bitti_ekrani()
@@ -569,7 +585,7 @@ func sandik_kacti():
 	seviye_hatalari += 1
 	_titreşim(45)
 	if seviye_modu and seviye_hatalari <= seviye_hata_toleransi:
-		_ipucu_goster("Hata %d/%d" % [seviye_hatalari, seviye_hata_toleransi])
+		_ipucu_goster(_t("mistakes", {"mistakes": seviye_hatalari, "allowed": seviye_hata_toleransi}))
 		for dusen in dusen_sandiklar.values():
 			dusen.queue_free()
 		dusen_sandiklar.clear()
@@ -584,9 +600,9 @@ func _seviye_tamamla():
 	$Timer.stop()
 	var yeni_basarimlar = Global.seviye_tamamla(aktif_seviye, skor, seviye_hatalari == 0)
 	var odul = int(SeviyeVeritabani.seviyeyi_al(aktif_seviye)["odul"])
-	_gecis_bildirimi("%d. seviye tamam! +%d yıldız" % [aktif_seviye, odul])
+	_gecis_bildirimi(_t("level_complete", {"level": aktif_seviye, "stars": odul}))
 	if not yeni_basarimlar.is_empty():
-		_ipucu_goster("Başarım açıldı: %s" % yeni_basarimlar[0]["ad"])
+		_ipucu_goster(_t("achievement_unlocked", {"name": Global.basarim_adi(yeni_basarimlar[0])}))
 	seviye_bilgi_label.visible = false
 	if aktif_seviye < SeviyeVeritabani.TOPLAM_SEVIYE:
 		get_tree().create_timer(1.4).timeout.connect(func(): baslat_seviye(aktif_seviye + 1))

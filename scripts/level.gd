@@ -1,6 +1,7 @@
 extends Node2D
 
 const SeviyeVeritabani = preload("res://scripts/seviye_veritabani.gd")
+const DilYoneticisi = preload("res://scripts/dil_yoneticisi.gd")
 
 @onready var hakkimizda_paneli: Panel = $HakkimizdaPaneli
 @onready var hakkimizda_karartma: ColorRect = $HakkimizdaKarartma
@@ -15,12 +16,100 @@ var gizlilik_baglanti_dugmesi: Button
 var gizlilik_veri_dugmesi: Button
 var gizlilik_silme_onayi := false
 var tema_mesaji := ""
+var dil_dugmeleri: Dictionary = {}
 
 func _ready():
 	_arkaplani_kur()
 	_baslangic_logosunu_kur()
 	_ilerleme_panelini_kur()
 	_gizlilik_panelini_kur()
+	_dil_sekmelerini_kur()
+	Global.dil_degisti.connect(_on_dil_degisti)
+	_metinleri_yenile()
+
+func _t(anahtar: String, degerler: Dictionary = {}) -> String:
+	return Global.cevir(anahtar, degerler)
+
+func _dil_sekmelerini_kur():
+	var satir = HBoxContainer.new()
+	satir.name = "DilSekmeleri"
+	satir.position = Vector2(76, 268)
+	satir.size = Vector2(424, 30)
+	satir.alignment = BoxContainer.ALIGNMENT_CENTER
+	satir.add_theme_constant_override("separation", 4)
+	$MenuButonlar/UI.add_child(satir)
+	for dil in DilYoneticisi.DILLER:
+		var dugme = Button.new()
+		var kod := str(dil["kod"])
+		dugme.custom_minimum_size = Vector2(72 if kod != "ar" else 160, 30)
+		dugme.text = str(dil["etiket"])
+		dugme.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
+		dugme.add_theme_font_size_override("font_size", 17)
+		dugme.add_theme_color_override("font_color", Color(0.9, 0.9, 0.88, 1))
+		dugme.flat = true
+		dugme.pressed.connect(func(): Global.dili_ayarla(kod))
+		satir.add_child(dugme)
+		dil_dugmeleri[kod] = dugme
+
+func _metinleri_yenile():
+	$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Basla.text = _t("play")
+	$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Ayarlar.text = _t("progress")
+	$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Açıklama.text = _t("how_to_play")
+	$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Hakkımızda.text = _t("about")
+	$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Gizlilik.text = _t("privacy")
+	$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Çıkış.text = _t("exit")
+	$MenuButonlar/ZorMenuButonlar/ZorMenu/Kolay.text = _t("easy")
+	$MenuButonlar/ZorMenuButonlar/ZorMenu/Orta.text = _t("medium")
+	$MenuButonlar/ZorMenuButonlar/ZorMenu/Zor.text = _t("hard")
+	$MenuButonlar/ZorMenuButonlar/ZorMenu/Geri.text = _t("back")
+	$MenuButonlar/Sayac/GeriButon.text = _t("back")
+	$MenuButonlar/TekrarDene/TekrarLabel.text = _t("try_again")
+	$HakkimizdaPaneli/Baslik.text = _t("how_title")
+	$HakkimizdaPaneli/Metin.text = _t("how_body")
+	$HakkimizdaPaneli/Kapat.text = _t("close")
+	$HakkimizdaEkrani/Baslik.text = _t("about_title")
+	$HakkimizdaEkrani/Metin.text = _t("about_body")
+	$HakkimizdaEkrani/Geri.text = _t("back")
+	_ana_menu_yazilarini_uygula()
+	for kod in dil_dugmeleri:
+		dil_dugmeleri[kod].disabled = kod == Global.dil_kodu()
+	_etiket_yonunu_uygula($HakkimizdaPaneli/Metin)
+	_etiket_yonunu_uygula($HakkimizdaEkrani/Metin)
+	_gizlilik_metinlerini_yenile()
+	if ilerleme_paneli and ilerleme_paneli.visible:
+		_ilerleme_ozetini_goster()
+
+func _etiket_yonunu_uygula(etiket: Label):
+	var rtl := Global.rtl_mi()
+	etiket.text_direction = Control.TEXT_DIRECTION_RTL if rtl else Control.TEXT_DIRECTION_LTR
+	etiket.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT if rtl else HORIZONTAL_ALIGNMENT_CENTER
+
+func _ana_menu_yazilarini_uygula():
+	# Arapça sistem yazı tipi, mevcut başlık yazı tipinden belirgin biçimde daha yüksek
+	# çizilir. Bu yüzden yalnızca RTL menüleri küçültüp tüm satırları görünür tutuyoruz.
+	var rtl := Global.rtl_mi()
+	var boyut := 40 if rtl else 60
+	var menuler: Array[Button] = [
+		$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Basla,
+		$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Ayarlar,
+		$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Açıklama,
+		$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Hakkımızda,
+		$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Gizlilik,
+		$MenuButonlar/BaslaMenuButonlar/BaslaMenu/Çıkış,
+		$MenuButonlar/ZorMenuButonlar/ZorMenu/Kolay,
+		$MenuButonlar/ZorMenuButonlar/ZorMenu/Orta,
+		$MenuButonlar/ZorMenuButonlar/ZorMenu/Zor,
+		$MenuButonlar/ZorMenuButonlar/ZorMenu/Geri,
+		$MenuButonlar/Sayac/GeriButon,
+		$MenuButonlar/TekrarDene/TekrarLabel,
+	]
+	for dugme in menuler:
+		dugme.add_theme_font_size_override("font_size", boyut)
+		dugme.text_direction = Control.TEXT_DIRECTION_RTL if rtl else Control.TEXT_DIRECTION_LTR
+		dugme.alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+func _on_dil_degisti(_kod: String):
+	_metinleri_yenile()
 
 func _arkaplani_kur():
 	arkaplan = TextureRect.new()
@@ -89,12 +178,12 @@ func _ilerleme_panelini_kur():
 	ilerleme_metin = _panel_etiketi(Vector2(28, 82), Vector2(476, 250), 21)
 	ilerleme_metin.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	ilerleme_paneli.add_child(ilerleme_metin)
-	_panel_dugmesi("SeviyeBaslat", "Sıradaki Seviyeyi Başlat", 342, _on_seviye_baslat_pressed)
-	_panel_dugmesi("Basarimlar", "Başarımlar", 394, _on_basarimlar_pressed)
-	_panel_dugmesi("Gunluk", "Günlük Görevler", 446, _on_gunluk_pressed)
-	_panel_dugmesi("Kozmetik", "Kozmetik Tema", 498, _on_kozmetik_pressed)
-	_panel_dugmesi("Titresim", "Titreşim", 550, _on_titresim_pressed)
-	_panel_dugmesi("Kapat", "Kapat", 594, _on_ilerleme_kapat_pressed, 30)
+	_panel_dugmesi("SeviyeBaslat", "", 342, _on_seviye_baslat_pressed)
+	_panel_dugmesi("Basarimlar", "", 394, _on_basarimlar_pressed)
+	_panel_dugmesi("Gunluk", "", 446, _on_gunluk_pressed)
+	_panel_dugmesi("Kozmetik", "", 498, _on_kozmetik_pressed)
+	_panel_dugmesi("Titresim", "", 550, _on_titresim_pressed)
+	_panel_dugmesi("Kapat", "", 594, _on_ilerleme_kapat_pressed, 30)
 	ilerleme_paneli.hide()
 
 func _panel_etiketi(konum: Vector2, boyut: Vector2, yazi_boyutu: int) -> Label:
@@ -125,28 +214,32 @@ func _on_ilerleme_pressed():
 	_ilerleme_ozetini_goster()
 
 func _ilerleme_ozetini_goster():
-	ilerleme_baslik.text = "İlerleme Merkezi"
-	ilerleme_metin.text = "Sıradaki: %d. seviye / %d\nTamamlanan: %d / %d\nRekor: %d   •   En yüksek seri: %d\nYıldız: %d\n\n%s" % [Global.sonraki_acik_seviye(), SeviyeVeritabani.TOPLAM_SEVIYE, Global.ilerleme["tamamlanan_seviyeler"].size(), SeviyeVeritabani.TOPLAM_SEVIYE, Global.rekor, Global.ilerleme["en_yuksek_seri"], Global.ilerleme["kozmetik_para"], tema_mesaji]
+	ilerleme_baslik.text = _t("progress_center")
+	ilerleme_metin.text = _t("progress_summary", {"next": Global.sonraki_acik_seviye(), "total": SeviyeVeritabani.TOPLAM_SEVIYE, "completed": Global.ilerleme["tamamlanan_seviyeler"].size(), "score": Global.rekor, "streak": Global.ilerleme["en_yuksek_seri"], "stars": Global.ilerleme["kozmetik_para"], "message": tema_mesaji})
+	var panel_metinleri := {"SeviyeBaslat": "start_next", "Basarimlar": "achievements", "Gunluk": "daily_tasks", "Kozmetik": "cosmetic_theme", "Titresim": "vibration", "Kapat": "close"}
+	for dugme_adi in panel_metinleri:
+		ilerleme_paneli.get_node(dugme_adi).text = _t(panel_metinleri[dugme_adi])
+	_etiket_yonunu_uygula(ilerleme_metin)
 
 func _on_seviye_baslat_pressed():
 	$KucukSandikOlustur.baslat_seviye(Global.sonraki_acik_seviye())
 	ilerleme_paneli.hide()
 
 func _on_basarimlar_pressed():
-	ilerleme_baslik.text = "Başarımlar"
+	ilerleme_baslik.text = _t("achievements")
 	var satirlar: Array[String] = []
 	for basarim in Global.BASARIMLAR:
 		var acik = Global.ilerleme["basarimlar"].get(basarim["id"], false)
-		satirlar.append(("✓ " if acik else "🔒 ") + basarim["ad"] + " — " + basarim["aciklama"])
+		satirlar.append(("✓ " if acik else "🔒 ") + Global.basarim_adi(basarim) + " — " + Global.basarim_aciklamasi(basarim))
 	ilerleme_metin.text = "\n".join(satirlar)
 
 func _on_gunluk_pressed():
-	ilerleme_baslik.text = "Günlük Görevler"
+	ilerleme_baslik.text = _t("daily_tasks")
 	var satirlar: Array[String] = []
 	for gorev in Global.ilerleme["gunluk"]["gorevler"]:
 		var durum = "✓" if gorev["tamamlandi"] else "%d/%d" % [gorev["ilerleme"], gorev["hedef"]]
-		satirlar.append("%s  %s  (+%d yıldız)" % [durum, gorev["metin"], gorev["odul"]])
-	ilerleme_metin.text = "Bugün\n\n" + "\n".join(satirlar) + "\n\nGörevler cihaz tarihine göre yenilenir."
+		satirlar.append("%s  %s  (+%d ★)" % [durum, Global.gunluk_gorev_metni(gorev), gorev["odul"]])
+	ilerleme_metin.text = _t("today") + "\n\n" + "\n".join(satirlar) + "\n\n" + _t("daily_note")
 
 func _on_kozmetik_pressed():
 	var temalar = Global.temalari_al()
@@ -157,15 +250,15 @@ func _on_kozmetik_pressed():
 			sonraki = temalar[(i + 1) % temalar.size()]
 			break
 	if Global.tema_al_veya_sec(sonraki["id"]):
-		tema_mesaji = "Tema seçildi: %s" % sonraki["ad"]
+		tema_mesaji = _t("theme_selected", {"theme": Global.tema_adi(sonraki)})
 		_arkaplan_temasini_uygula()
 	else:
-		tema_mesaji = "%s için %d yıldız gerekli." % [sonraki["ad"], sonraki["fiyat"]]
+		tema_mesaji = _t("theme_cost", {"theme": Global.tema_adi(sonraki), "price": sonraki["fiyat"]})
 	_ilerleme_ozetini_goster()
 
 func _on_titresim_pressed():
 	var acik = Global.titresimi_degistir()
-	tema_mesaji = "Titreşim %s." % ("açık" if acik else "kapalı")
+	tema_mesaji = _t("vibration_on" if acik else "vibration_off")
 	_ilerleme_ozetini_goster()
 
 func _on_ilerleme_kapat_pressed():
@@ -191,17 +284,16 @@ func _gizlilik_panelini_kur():
 	gizlilik_paneli.add_theme_stylebox_override("panel", stil)
 	add_child(gizlilik_paneli)
 	var baslik = _panel_etiketi(Vector2(22, 16), Vector2(488, 46), 34)
-	baslik.text = "Gizlilik Politikası"
+	baslik.name = "Baslik"
 	baslik.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	gizlilik_paneli.add_child(baslik)
 	gizlilik_metin = _panel_etiketi(Vector2(30, 74), Vector2(472, 404), 17)
 	gizlilik_metin.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	gizlilik_metin.text = "Son güncelleme: 27 Ağustos 2026\n\nSandık Düştü hesap oluşturmaz; reklam, analitik veya üçüncü taraf takip hizmeti kullanmaz. Konum, kamera, mikrofon, kişi, fotoğraf ya da benzeri kişisel verileri toplamaz ve paylaşmaz.\n\nRekor, seviye ilerlemesi, başarımlar, günlük görevler ve tercihlerin yalnızca cihazınızda saklanır. Bu bilgiler internet üzerinden gönderilmez. Uygulama ek Android izni istemez. Titreşim yalnızca açık seçeneğinde ve desteklenen cihazlarda kullanılır.\n\nYerel oyun verilerinizi aşağıdan sıfırlayabilirsiniz. Bu işlem geri alınamaz. Gizlilik soruları için: tgrttaskesen@gmail.com"
 	gizlilik_paneli.add_child(gizlilik_metin)
 	gizlilik_baglanti_dugmesi = Button.new()
+	gizlilik_baglanti_dugmesi.name = "PolitikaBaglantisi"
 	gizlilik_baglanti_dugmesi.position = Vector2(58, 480)
 	gizlilik_baglanti_dugmesi.size = Vector2(416, 40)
-	gizlilik_baglanti_dugmesi.text = "Çevrimiçi Politikayı Aç"
 	gizlilik_baglanti_dugmesi.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
 	gizlilik_baglanti_dugmesi.add_theme_font_size_override("font_size", 22)
 	gizlilik_baglanti_dugmesi.add_theme_color_override("font_color", Color(0.9, 0.9, 0.88, 1))
@@ -209,9 +301,9 @@ func _gizlilik_panelini_kur():
 	gizlilik_baglanti_dugmesi.pressed.connect(_on_gizlilik_baglanti_pressed)
 	gizlilik_paneli.add_child(gizlilik_baglanti_dugmesi)
 	gizlilik_veri_dugmesi = Button.new()
+	gizlilik_veri_dugmesi.name = "VeriSifirla"
 	gizlilik_veri_dugmesi.position = Vector2(58, 528)
 	gizlilik_veri_dugmesi.size = Vector2(416, 46)
-	gizlilik_veri_dugmesi.text = "Yerel Verileri Sıfırla"
 	gizlilik_veri_dugmesi.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
 	gizlilik_veri_dugmesi.add_theme_font_size_override("font_size", 24)
 	gizlilik_veri_dugmesi.add_theme_color_override("font_color", Color(0.9, 0.9, 0.88, 1))
@@ -219,20 +311,32 @@ func _gizlilik_panelini_kur():
 	gizlilik_veri_dugmesi.pressed.connect(_on_gizlilik_veri_sifirla_pressed)
 	gizlilik_paneli.add_child(gizlilik_veri_dugmesi)
 	var kapat = Button.new()
+	kapat.name = "Kapat"
 	kapat.position = Vector2(170, 582)
 	kapat.size = Vector2(192, 48)
-	kapat.text = "Kapat"
 	kapat.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
 	kapat.add_theme_font_size_override("font_size", 28)
 	kapat.add_theme_color_override("font_color", Color(0.9, 0.9, 0.88, 1))
 	kapat.flat = true
 	kapat.pressed.connect(_on_gizlilik_kapat_pressed)
 	gizlilik_paneli.add_child(kapat)
+	_gizlilik_metinlerini_yenile()
 	gizlilik_paneli.hide()
+
+func _gizlilik_metinlerini_yenile():
+	if gizlilik_paneli == null:
+		return
+	gizlilik_paneli.get_node("Baslik").text = _t("privacy_title")
+	gizlilik_metin.text = _t("privacy_body")
+	_etiket_yonunu_uygula(gizlilik_metin)
+	gizlilik_baglanti_dugmesi.text = _t("open_policy")
+	if not gizlilik_silme_onayi:
+		gizlilik_veri_dugmesi.text = _t("reset_data")
+	gizlilik_paneli.get_node("Kapat").text = _t("close")
 
 func _on_gizlilik_pressed():
 	gizlilik_silme_onayi = false
-	gizlilik_veri_dugmesi.text = "Yerel Verileri Sıfırla"
+	gizlilik_veri_dugmesi.text = _t("reset_data")
 	gizlilik_paneli.show()
 
 func _on_gizlilik_baglanti_pressed():
@@ -241,14 +345,14 @@ func _on_gizlilik_baglanti_pressed():
 func _on_gizlilik_veri_sifirla_pressed():
 	if not gizlilik_silme_onayi:
 		gizlilik_silme_onayi = true
-		gizlilik_veri_dugmesi.text = "Silmek için tekrar dokunun"
+		gizlilik_veri_dugmesi.text = _t("reset_confirm")
 		return
 	if Global.yerel_verileri_sifirla():
 		gizlilik_silme_onayi = false
-		gizlilik_veri_dugmesi.text = "Veriler sıfırlandı"
+		gizlilik_veri_dugmesi.text = _t("data_reset")
 	else:
 		gizlilik_silme_onayi = false
-		gizlilik_veri_dugmesi.text = "Sıfırlama yapılamadı"
+		gizlilik_veri_dugmesi.text = _t("reset_failed")
 
 func _on_gizlilik_kapat_pressed():
 	gizlilik_paneli.hide()

@@ -126,14 +126,8 @@ func sandik_yakalandi(seri: int):
 	ilerleme["toplam_yakalanan"] = int(ilerleme["toplam_yakalanan"]) + 1
 	ilerleme["en_yuksek_seri"] = maxi(int(ilerleme["en_yuksek_seri"]), seri)
 	gunluk_ilerlet("yakala", 1)
-	basarim_olc("seri", seri)
-	basarim_olc("toplam", int(ilerleme["toplam_yakalanan"]))
 	basarimlari_guncelle()
 	kaydet_ilerleme()
-
-func basarim_olc(tur: String, deger: int):
-	if tur == "rekor":
-		basarimlari_guncelle()
 
 func basarimlari_guncelle() -> Array:
 	var acilanlar: Array = []

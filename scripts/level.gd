@@ -11,6 +11,7 @@ var ilerleme_baslik: Label
 var ilerleme_metin: Label
 var gizlilik_paneli: Panel
 var gizlilik_metin: Label
+var gizlilik_baglanti_dugmesi: Button
 var gizlilik_veri_dugmesi: Button
 var gizlilik_silme_onayi := false
 var tema_mesaji := ""
@@ -197,8 +198,18 @@ func _gizlilik_panelini_kur():
 	gizlilik_metin.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	gizlilik_metin.text = "Son güncelleme: 27 Ağustos 2026\n\nSandık Düştü hesap oluşturmaz; reklam, analitik veya üçüncü taraf takip hizmeti kullanmaz. Konum, kamera, mikrofon, kişi, fotoğraf ya da benzeri kişisel verileri toplamaz ve paylaşmaz.\n\nRekor, seviye ilerlemesi, başarımlar, günlük görevler ve tercihlerin yalnızca cihazınızda saklanır. Bu bilgiler internet üzerinden gönderilmez. Uygulama ek Android izni istemez. Titreşim yalnızca açık seçeneğinde ve desteklenen cihazlarda kullanılır.\n\nYerel oyun verilerinizi aşağıdan sıfırlayabilirsiniz. Bu işlem geri alınamaz. Gizlilik soruları için: tgrttaskesen@gmail.com"
 	gizlilik_paneli.add_child(gizlilik_metin)
+	gizlilik_baglanti_dugmesi = Button.new()
+	gizlilik_baglanti_dugmesi.position = Vector2(58, 480)
+	gizlilik_baglanti_dugmesi.size = Vector2(416, 40)
+	gizlilik_baglanti_dugmesi.text = "Çevrimiçi Politikayı Aç"
+	gizlilik_baglanti_dugmesi.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
+	gizlilik_baglanti_dugmesi.add_theme_font_size_override("font_size", 22)
+	gizlilik_baglanti_dugmesi.add_theme_color_override("font_color", Color(0.9, 0.9, 0.88, 1))
+	gizlilik_baglanti_dugmesi.flat = true
+	gizlilik_baglanti_dugmesi.pressed.connect(_on_gizlilik_baglanti_pressed)
+	gizlilik_paneli.add_child(gizlilik_baglanti_dugmesi)
 	gizlilik_veri_dugmesi = Button.new()
-	gizlilik_veri_dugmesi.position = Vector2(58, 500)
+	gizlilik_veri_dugmesi.position = Vector2(58, 528)
 	gizlilik_veri_dugmesi.size = Vector2(416, 46)
 	gizlilik_veri_dugmesi.text = "Yerel Verileri Sıfırla"
 	gizlilik_veri_dugmesi.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
@@ -208,7 +219,7 @@ func _gizlilik_panelini_kur():
 	gizlilik_veri_dugmesi.pressed.connect(_on_gizlilik_veri_sifirla_pressed)
 	gizlilik_paneli.add_child(gizlilik_veri_dugmesi)
 	var kapat = Button.new()
-	kapat.position = Vector2(170, 570)
+	kapat.position = Vector2(170, 582)
 	kapat.size = Vector2(192, 48)
 	kapat.text = "Kapat"
 	kapat.add_theme_font_override("font", preload("res://fonts/font-80.tres"))
@@ -223,6 +234,9 @@ func _on_gizlilik_pressed():
 	gizlilik_silme_onayi = false
 	gizlilik_veri_dugmesi.text = "Yerel Verileri Sıfırla"
 	gizlilik_paneli.show()
+
+func _on_gizlilik_baglanti_pressed():
+	OS.shell_open("https://ttaskesen.github.io/SandikDustu/PRIVACY_POLICY.html")
 
 func _on_gizlilik_veri_sifirla_pressed():
 	if not gizlilik_silme_onayi:

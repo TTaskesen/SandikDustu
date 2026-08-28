@@ -7,8 +7,8 @@ static func seviyeyi_al(seviye_no: int) -> Dictionary:
 	var no = clampi(seviye_no, 1, TOPLAM_SEVIYE)
 	var zorluk = _zorluk_belirle(no)
 	var renk_sayisi = {"kolay": 3, "orta": 6, "zor": 9}[zorluk]
-	var hedef_skor = mini(12, 3 + int((no - 1) / 4))
-	var dusme_hizi = 95 + (no - 1) * 3
+	var hedef_skor = mini(12, 3 + int((no - 1) / 4.0))
+	var dusme_hizi = 200 if no <= 15 else (150 if no <= 35 else 100)
 	var interval = maxf(0.42, 1.1 - (no - 1) * 0.012)
 	var hata_toleransi = 2 if no <= 15 else (1 if no <= 35 else 0)
 	return {
@@ -20,7 +20,7 @@ static func seviyeyi_al(seviye_no: int) -> Dictionary:
 		"interval": interval,
 		"renk_dizilimi": _renk_dizilimi(no, renk_sayisi),
 		"hata_toleransi": hata_toleransi,
-		"odul": 6 + int((no - 1) / 5) * 2,
+		"odul": 6 + int((no - 1) / 5.0) * 2,
 	}
 
 static func _zorluk_belirle(seviye_no: int) -> String:

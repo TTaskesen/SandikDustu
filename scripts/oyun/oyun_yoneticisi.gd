@@ -545,11 +545,11 @@ func cozumle(sutun: int):
 			return
 		if not seviye_modu and aktif_zorluk == "kolay" and skor >= 15:
 			_gecis_bildirimi("Orta'ya Geçtin!")
-			call_deferred("oyunu_baslat", 2.0, 100, "orta")
+			call_deferred("oyunu_baslat", 2.0, 150, "orta")
 			return
 		if not seviye_modu and aktif_zorluk == "orta" and skor >= 30:
 			_gecis_bildirimi("Zor'a Geçtin!")
-			call_deferred("oyunu_baslat", 1.5, 90, "zor")
+			call_deferred("oyunu_baslat", 1.5, 100, "zor")
 			return
 		if not seviye_modu and aktif_zorluk == "zor" and skor >= 100:
 			_oyun_bitti_ekrani()

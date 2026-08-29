@@ -5,7 +5,6 @@ const SeviyeVeritabani = preload("res://scripts/seviye_veritabani.gd")
 const SUTUN_X = [97, 287, 480]
 const SANDIK_Y = 990
 const SANDIK_SATIR_ARALIGI = 96
-const OYUN_ALANI_Y = -232.0
 const ANDROID_MIN_ALT_GUVENLIK_BOSLUGU = 72.0
 const SANDIK_DIZILIMLERI = {
 	"kolay": [
@@ -130,7 +129,12 @@ func _android_guvenli_alani_hazirla():
 	android_alt_guvenlik_boslugu = maxf(ANDROID_MIN_ALT_GUVENLIK_BOSLUGU, hesaplanan_bosluk)
 
 func _oyun_alani_konumu() -> Vector2:
-	return Vector2(0, OYUN_ALANI_Y - android_alt_guvenlik_boslugu)
+	# Geniş ekranlı Android cihazlarda oyun alanı, en alttaki büyük sandıklar
+	# sistem gezinme tuşlarının hemen üzerinde kalacak şekilde aşağı yerleşsin.
+	var gorunur_yukseklik = get_viewport().get_visible_rect().size.y
+	var buyuk_sandik_alt_siniri = SANDIK_Y + 94.0
+	var hedef_alt = gorunur_yukseklik - android_alt_guvenlik_boslugu - 24.0
+	return Vector2(0, hedef_alt - buyuk_sandik_alt_siniri)
 
 func _giris_logosunu_goster(gorunur: bool):
 	var giris_logosu = get_node_or_null("../MenuButonlar/UI/BaslangicLogo") as CanvasItem

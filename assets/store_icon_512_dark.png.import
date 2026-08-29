@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cxacvjgifcpqr"
-path="res://.godot/imported/sandikPembe64.png-c8537fbf12d3266e2fc9586803f37868.ctex"
+uid="uid://bbvfcos8ket2x"
+path="res://.godot/imported/store_icon_512_dark.png-b081178653dc8c2935332a9d888435d3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Sandik3/sandikPembe64.png"
-dest_files=["res://.godot/imported/sandikPembe64.png-c8537fbf12d3266e2fc9586803f37868.ctex"]
+source_file="res://assets/store_icon_512_dark.png"
+dest_files=["res://.godot/imported/store_icon_512_dark.png-b081178653dc8c2935332a9d888435d3.ctex"]
 
 [params]
 

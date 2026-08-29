@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b5rdtle4x7l75"
-path="res://.godot/imported/adaptive_background_432x432.png-f505c25e18d58eab4ce3ff66a7ddc025.ctex"
+uid="uid://bo8d62b33lniu"
+path="res://.godot/imported/adaptive_foreground_432x432.png-0a256d7b9fe3c08f424ccf0fe486ea16.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ikon/adaptive_background_432x432.png"
-dest_files=["res://.godot/imported/adaptive_background_432x432.png-f505c25e18d58eab4ce3ff66a7ddc025.ctex"]
+source_file="res://assets/adaptive_foreground_432x432.png"
+dest_files=["res://.godot/imported/adaptive_foreground_432x432.png-0a256d7b9fe3c08f424ccf0fe486ea16.ctex"]
 
 [params]
 

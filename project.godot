@@ -17,11 +17,9 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Sandık Düştü"
 run/main_scene="uid://i8t6pcm3crgi"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://logo.png"
-
 boot_splash/bg_color=Color(0, 0, 1, 1)
 boot_splash/image="res://logo.png"
-boot_splash/show_image=true
+config/icon="res://logo.png"
 
 [autoload]
 
@@ -29,11 +27,11 @@ Global="*res://scripts/global.gd"
 
 [display]
 
-window/handheld/orientation=1
 window/size/viewport_width=576
 window/size/viewport_height=800
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/handheld/orientation=1
 
 [rendering]
 

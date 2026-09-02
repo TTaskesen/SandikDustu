@@ -6,6 +6,8 @@ const SUTUN_X = [97, 287, 480]
 const SANDIK_Y = 990
 const SANDIK_SATIR_ARALIGI = 96
 const ANDROID_MIN_ALT_GUVENLIK_BOSLUGU = 72.0
+const ANDROID_ALT_BOSLUK_AZALTMA_ORANI = 0.35
+const OYUN_ALANI_ALT_MARJI = 24.0
 const SANDIK_DIZILIMLERI = {
 	"kolay": [
 		Vector2(96, SANDIK_Y), Vector2(288, SANDIK_Y), Vector2(480, SANDIK_Y),
@@ -129,11 +131,14 @@ func _android_guvenli_alani_hazirla():
 	android_alt_guvenlik_boslugu = maxf(ANDROID_MIN_ALT_GUVENLIK_BOSLUGU, hesaplanan_bosluk)
 
 func _oyun_alani_konumu() -> Vector2:
-	# Geniş ekranlı Android cihazlarda oyun alanı, en alttaki büyük sandıklar
-	# sistem gezinme tuşlarının hemen üzerinde kalacak şekilde aşağı yerleşsin.
+	# Geniş ekranlı Android cihazlarda alt boşluğu cihazın güvenli alanına göre
+	# hesapla; kullanılabilir oyun alanını %35 artırmak için boşluğu azalt.
 	var gorunur_yukseklik = get_viewport().get_visible_rect().size.y
 	var buyuk_sandik_alt_siniri = SANDIK_Y + 94.0
-	var hedef_alt = gorunur_yukseklik - android_alt_guvenlik_boslugu - 24.0
+	var alt_bosluk = android_alt_guvenlik_boslugu + OYUN_ALANI_ALT_MARJI
+	if OS.get_name() == "Android":
+		alt_bosluk *= 1.0 - ANDROID_ALT_BOSLUK_AZALTMA_ORANI
+	var hedef_alt = gorunur_yukseklik - alt_bosluk
 	return Vector2(0, hedef_alt - buyuk_sandik_alt_siniri)
 
 func _giris_logosunu_goster(gorunur: bool):

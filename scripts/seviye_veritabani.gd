@@ -11,7 +11,7 @@ static func seviyeyi_al(seviye_no: int) -> Dictionary:
 	# İlk tur çok kısa kalır; ardından hedefler küçük ama fark edilir adımlarla artar.
 	# Böylece 50 seviye, aynı 3 sandığı tekrarlatan bir liste gibi hissettirmez.
 	var hedef_skor = _hedef_skor_belirle(no)
-	var dusme_hizi = 200 if no <= 15 else (150 if no <= 35 else 100)
+	var dusme_hizi = _dusme_hizi_belirle(zorluk)
 	var interval = _interval_belirle(no)
 	var hata_toleransi = _hata_toleransi_belirle(no)
 	return {
@@ -26,12 +26,73 @@ static func seviyeyi_al(seviye_no: int) -> Dictionary:
 		"odul": 6 + int((no - 1) / 5.0) * 2,
 	}
 
+static func donen_seviyeyi_al(seviye_no: int) -> Dictionary:
+	var no = clampi(seviye_no, 1, TOPLAM_SEVIYE)
+	var zorluk = _zorluk_belirle(no)
+	var renk_sayisi = {"kolay": 3, "orta": 6, "zor": 9}[zorluk]
+	return {
+		"id": no,
+		"ad": "Dönen %d. Seviye" % no,
+		"zorluk": zorluk,
+		"hedef_skor": _hedef_skor_belirle(no),
+		"dusme_hizi": _donen_dusme_hizi_belirle(zorluk),
+		"interval": _donen_interval_belirle(no),
+		"renk_havuzu": RENKLER.slice(0, renk_sayisi),
+		"kenar_basina_renk_sayisi": {"kolay": 1, "orta": 2, "zor": 3}[zorluk],
+		"renk_degisimi_suresi": _donen_renk_degisimi_suresi(zorluk),
+		"hata_toleransi": _hata_toleransi_belirle(no),
+		"odul": 6 + int((no - 1) / 5.0) * 2,
+	}
+
+static func ucgen_seviyeyi_al(seviye_no: int) -> Dictionary:
+	var veri = donen_seviyeyi_al(seviye_no).duplicate(true)
+	veri["ad"] = "Triangle %d" % clampi(seviye_no, 1, TOPLAM_SEVIYE)
+	return veri
+
 static func _zorluk_belirle(seviye_no: int) -> String:
 	if seviye_no <= 15:
 		return "kolay"
 	if seviye_no <= 35:
 		return "orta"
 	return "zor"
+
+static func _dusme_hizi_belirle(zorluk: String) -> int:
+	# Hız piksel/saniye cinsindedir; tüm seviyeler kendi zorluk grubunun hızını kullanır.
+	match zorluk:
+		"kolay":
+			return 200
+		"orta":
+			return 250
+		"zor":
+			return 300
+	return 200
+
+static func _donen_dusme_hizi_belirle(zorluk: String) -> int:
+	match zorluk:
+		"kolay":
+			return 100
+		"orta":
+			return 150
+		"zor":
+			return 200
+	return 100
+
+static func _donen_renk_degisimi_suresi(zorluk: String) -> float:
+	match zorluk:
+		"kolay":
+			return 2.0
+		"orta":
+			return 1.5
+		"zor":
+			return 1.0
+	return 2.0
+
+static func _donen_interval_belirle(seviye_no: int) -> float:
+	if seviye_no <= 15:
+		return maxf(1.1, 1.5 - (seviye_no - 1) * 0.025)
+	if seviye_no <= 35:
+		return maxf(0.82, 1.15 - (seviye_no - 16) * 0.017)
+	return maxf(0.65, 0.88 - (seviye_no - 36) * 0.016)
 
 static func _hedef_skor_belirle(seviye_no: int) -> int:
 	if seviye_no == 1:

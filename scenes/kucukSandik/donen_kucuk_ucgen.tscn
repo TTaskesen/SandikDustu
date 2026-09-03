@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/oyun/donen_kucuk_ucgen.gd" id="1_ucgen"]
+
+[sub_resource type="ConvexPolygonShape2D" id="ConvexPolygonShape2D_ucgen"]
+points = PackedVector2Array(0, -53.12, -46, 26.56, 46, 26.56)
+
+[node name="DonenKucukUcgen" type="Area2D" groups=["kucuk"]]
+script = ExtResource("1_ucgen")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("ConvexPolygonShape2D_ucgen")

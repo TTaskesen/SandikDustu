@@ -2,8 +2,7 @@ extends VBoxContainer
 
 func _on_geri_pressed():
 	var yonetici = owner.get_node("KucukSandikOlustur")
-	yonetici.oyunu_sifirla()
-	yonetici.ekrani_ac()
+	yonetici.oyun_tur_menu_ac()
 
 func _on_geri_buton_pressed():
 	var yonetici = owner.get_node("KucukSandikOlustur")

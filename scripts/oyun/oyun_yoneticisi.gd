@@ -55,6 +55,8 @@ var kucuk_sahneler = {
 	"turuncu": preload("res://scenes/kucukSandik/kucuk_turuncu_sandik.tscn"),
 	"yesil": preload("res://scenes/kucukSandik/kucuk_yesil_sandik.tscn"),
 }
+const DONEN_KUCUK_SANDIK = preload("res://scenes/kucukSandik/donen_kucuk_sandik.tscn")
+const DONEN_KUCUK_UCGEN = preload("res://scenes/kucukSandik/donen_kucuk_ucgen.tscn")
 
 @onready var kolay_menu: Node2D = $"../KolayMenu"
 @onready var baslik: Label = $"../MenuButonlar/UI/Baslik"
@@ -63,6 +65,9 @@ var kucuk_sahneler = {
 @onready var yuksek_skor_label: Label = $"../MenuButonlar/Sayac/YüksekSkorLabel"
 @onready var basla_menu: Control = $"../MenuButonlar/BaslaMenuButonlar/BaslaMenu"
 @onready var zor_menu: Control = $"../MenuButonlar/ZorMenuButonlar/ZorMenu"
+@onready var oyun_tur_menu: Control = $"../MenuButonlar/OyunTurMenuButonlar/OyunTurMenu"
+@onready var sandik_renk_menu: Control = $"../MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu"
+@onready var ucgen_renk_menu: Control = $"../MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu"
 @onready var tekrar_label: Button = $"../MenuButonlar/TekrarDene/TekrarLabel"
 @onready var sandiklar: Node2D = $"../KolayMenu/MenuEkrani/Sandiklar64"
 @onready var ucgenler: Node2D = $"../KolayMenu/MenuEkrani/Üçgenler"
@@ -94,6 +99,15 @@ var seviye_hatalari := 0
 var aktif_renk_dizilimi: Array = []
 var seri := 0
 var egitim_aktif := false
+var donen_sandik_modu := false
+var donen_seviye_modu := false
+var donen_renk_havuzu: Array = []
+var donen_renk_degisimi_suresi := 2.0
+var donen_kenar_basina_renk_sayisi := 1
+var ucgen_renk_modu := false
+var ucgen_seviye_modu := false
+var ucgen_renk_havuzu: Array = []
+var ucgen_kenar_basina_renk_sayisi := 1
 
 func _ready():
 	_android_guvenli_alani_hazirla()
@@ -357,6 +371,8 @@ func firlat(sutun: int):
 func ekrani_ac():
 	$SesTik.play()
 	_giris_logosunu_goster(true)
+	_oyun_tur_menulerini_gizle()
+	zor_menu.hide()
 	basla_menu.show()
 	var tween = _menu_tweeni()
 	tween.tween_property(basla_menu, "position", Vector2(0, 320), MENU_SURE)
@@ -370,24 +386,122 @@ func ekrani_ac():
 	ogretici_label.visible = false
 
 func zor_menu_ac():
+	sandik_menu_ac()
+
+func oyun_tur_menu_ac():
 	$SesTik.play()
 	_giris_logosunu_goster(true)
+	basla_menu.hide()
+	zor_menu.hide()
+	sandik_renk_menu.hide()
+	ucgen_renk_menu.hide()
+	oyun_tur_menu.show()
 	var tween = _menu_tweeni()
-	tween.tween_property(basla_menu, "position", Vector2(-576, 320), MENU_SURE)
+	tween.tween_property(oyun_tur_menu, "position", Vector2(0, 320), MENU_SURE)
+
+func sandik_menu_ac():
+	$SesTik.play()
+	oyun_tur_menu.hide()
+	sandik_renk_menu.hide()
+	ucgen_renk_menu.hide()
+	zor_menu.show()
+	var tween = _menu_tweeni()
 	tween.tween_property(zor_menu, "position", Vector2(0, 320), MENU_SURE)
+
+func sandik_renk_menu_ac():
+	$SesTik.play()
+	oyun_tur_menu.hide()
+	zor_menu.hide()
+	ucgen_renk_menu.hide()
+	sandik_renk_menu.show()
+	var tween = _menu_tweeni()
+	tween.tween_property(sandik_renk_menu, "position", Vector2(0, 320), MENU_SURE)
+
+func ucgen_renk_menu_ac():
+	$SesTik.play()
+	oyun_tur_menu.hide()
+	zor_menu.hide()
+	sandik_renk_menu.hide()
+	ucgen_renk_menu.show()
+	var tween = _menu_tweeni()
+	tween.tween_property(ucgen_renk_menu, "position", Vector2(0, 320), MENU_SURE)
+
+func _oyun_tur_menulerini_gizle():
+	oyun_tur_menu.hide()
+	sandik_renk_menu.hide()
+	ucgen_renk_menu.hide()
+
+func donen_zorluk_baslat(zorluk_adi: String):
+	var araliklar = {"kolay": Vector2i(1, 15), "orta": Vector2i(16, 35), "zor": Vector2i(36, 50)}
+	var aralik: Vector2i = araliklar[zorluk_adi]
+	var sonraki = Global.sonraki_donen_acik_seviye()
+	if sonraki < aralik.x:
+		_ipucu_goster(_t("level_locked"))
+		return
+	baslat_donen_seviye(mini(sonraki, aralik.y))
+
+func normal_zorluk_baslat(zorluk_adi: String):
+	var araliklar = {"kolay": Vector2i(1, 15), "orta": Vector2i(16, 35), "zor": Vector2i(36, 50)}
+	var aralik: Vector2i = araliklar[zorluk_adi]
+	var sonraki = Global.sonraki_acik_seviye()
+	if sonraki < aralik.x:
+		_ipucu_goster(_t("level_locked"))
+		return
+	baslat_seviye(mini(sonraki, aralik.y))
+
+func ucgen_zorluk_baslat(zorluk_adi: String):
+	var araliklar = {"kolay": Vector2i(1, 15), "orta": Vector2i(16, 35), "zor": Vector2i(36, 50)}
+	var aralik: Vector2i = araliklar[zorluk_adi]
+	var sonraki = Global.sonraki_ucgen_acik_seviye()
+	if sonraki < aralik.x:
+		_ipucu_goster(_t("level_locked"))
+		return
+	baslat_ucgen_seviye(mini(sonraki, aralik.y))
 
 func oyunu_baslat(interval: float, dusme_hizi: int, zorluk_adi: String):
 	seviye_modu = false
 	aktif_seviye = 0
 	aktif_renk_dizilimi = []
 	egitim_aktif = false
+	donen_sandik_modu = false
+	donen_seviye_modu = false
+	ucgen_renk_modu = false
+	ucgen_seviye_modu = false
 	_oyunu_baslat_ozel(interval, dusme_hizi, zorluk_adi)
+
+func donen_seviyeleri_baslat():
+	baslat_donen_seviye(Global.sonraki_donen_acik_seviye())
+
+func baslat_donen_seviye(seviye_no: int):
+	if not Global.donen_seviye_acik_mi(seviye_no):
+		_ipucu_goster(_t("level_locked"))
+		return
+	var veri = SeviyeVeritabani.donen_seviyeyi_al(seviye_no)
+	seviye_modu = true
+	donen_seviye_modu = true
+	donen_sandik_modu = true
+	ucgen_renk_modu = false
+	ucgen_seviye_modu = false
+	aktif_seviye = seviye_no
+	seviye_hedefi = int(veri["hedef_skor"])
+	seviye_hata_toleransi = int(veri["hata_toleransi"])
+	seviye_hatalari = 0
+	aktif_renk_dizilimi = []
+	donen_renk_havuzu = veri["renk_havuzu"].duplicate()
+	donen_renk_degisimi_suresi = float(veri["renk_degisimi_suresi"])
+	donen_kenar_basina_renk_sayisi = int(veri["kenar_basina_renk_sayisi"])
+	egitim_aktif = false
+	_oyunu_baslat_ozel(float(veri["interval"]), int(veri["dusme_hizi"]), str(veri["zorluk"]))
 
 func baslat_seviye(seviye_no: int):
 	if not Global.seviye_acik_mi(seviye_no):
 		_ipucu_goster(_t("level_locked"))
 		return
 	var veri = SeviyeVeritabani.seviyeyi_al(seviye_no)
+	donen_sandik_modu = false
+	donen_seviye_modu = false
+	ucgen_renk_modu = false
+	ucgen_seviye_modu = false
 	seviye_modu = true
 	aktif_seviye = seviye_no
 	seviye_hedefi = int(veri["hedef_skor"])
@@ -405,12 +519,34 @@ func baslat_seviye(seviye_no: int):
 	else:
 		_oyunu_baslat_ozel(float(veri["interval"]), int(veri["dusme_hizi"]), str(veri["zorluk"]))
 
+func baslat_ucgen_seviye(seviye_no: int):
+	if not Global.ucgen_seviye_acik_mi(seviye_no):
+		_ipucu_goster(_t("level_locked"))
+		return
+	var veri = SeviyeVeritabani.ucgen_seviyeyi_al(seviye_no)
+	seviye_modu = true
+	donen_seviye_modu = false
+	donen_sandik_modu = false
+	ucgen_renk_modu = true
+	ucgen_seviye_modu = true
+	aktif_seviye = seviye_no
+	seviye_hedefi = int(veri["hedef_skor"])
+	seviye_hata_toleransi = int(veri["hata_toleransi"])
+	seviye_hatalari = 0
+	aktif_renk_dizilimi = []
+	ucgen_renk_havuzu = veri["renk_havuzu"].duplicate()
+	ucgen_kenar_basina_renk_sayisi = int(veri["kenar_basina_renk_sayisi"])
+	egitim_aktif = false
+	_oyunu_baslat_ozel(float(veri["interval"]), int(veri["dusme_hizi"]), str(veri["zorluk"]))
+
 func _oyunu_baslat_ozel(interval: float, dusme_hizi: int, zorluk_adi: String):
 	$SesTik.play()
 	oyunu_sifirla()
 	_giris_logosunu_goster(false)
 	# Seviye merkezi ana menüden doğrudan oyun başlatabilir; menü oyun alanına taşmamalı.
 	basla_menu.hide()
+	_oyun_tur_menulerini_gizle()
+	zor_menu.hide()
 	kolay_menu.show()
 	kontrol = true
 	son_interval = interval
@@ -430,6 +566,12 @@ func _oyunu_baslat_ozel(interval: float, dusme_hizi: int, zorluk_adi: String):
 	kucuk_sandik_olustur()
 
 func tekrar_oyna():
+	if ucgen_seviye_modu and aktif_seviye > 0:
+		baslat_ucgen_seviye(aktif_seviye)
+		return
+	if donen_seviye_modu and aktif_seviye > 0:
+		baslat_donen_seviye(aktif_seviye)
+		return
 	if seviye_modu and aktif_seviye > 0:
 		baslat_seviye(aktif_seviye)
 		return
@@ -470,6 +612,7 @@ func oyun_sonu():
 	_yuksek_skoru_yenile()
 	$SesKaybetme.play()
 	$Timer.stop()
+	_oyun_tur_menulerini_gizle()
 	seviye_bilgi_label.visible = false
 	ogretici_label.visible = false
 	var tween = _menu_tweeni()
@@ -510,6 +653,7 @@ func _ana_menuye_don():
 	Global.rekoru_guncelle(skor)
 	_yuksek_skoru_yenile()
 	var tween = _menu_tweeni()
+	_oyun_tur_menulerini_gizle()
 	basla_menu.show()
 	tween.tween_property(basla_menu, "position", Vector2(0, 320), MENU_SURE)
 	tween.tween_property(zor_menu, "position", Vector2(576, 320), MENU_SURE)
@@ -530,8 +674,16 @@ func kucuk_sandik_olustur():
 		_renk_sirasini_hazirla()
 	# Öğreticide tek üçgen görünür; düşen sandık da aynı sütunda olmalı.
 	var sutun = 0 if egitim_aktif else randi_range(0, 2)
-	var renk = renk_sirasi.pop_back()
-	var dusen = kucuk_sahneler[renk].instantiate()
+	var dusen
+	if ucgen_renk_modu:
+		dusen = DONEN_KUCUK_UCGEN.instantiate()
+		dusen.renk_havuzunu_ayarla(ucgen_renk_havuzu, ucgen_kenar_basina_renk_sayisi)
+	elif donen_sandik_modu:
+		dusen = DONEN_KUCUK_SANDIK.instantiate()
+		dusen.renk_havuzunu_ayarla(donen_renk_havuzu, donen_renk_degisimi_suresi, donen_kenar_basina_renk_sayisi)
+	else:
+		var renk = renk_sirasi.pop_back()
+		dusen = kucuk_sahneler[renk].instantiate()
 	dusen.speed = hiz
 	dusen.position = Vector2(SUTUN_X[sutun], -100)
 	$Projectiles.add_child(dusen)
@@ -540,7 +692,7 @@ func kucuk_sandik_olustur():
 func cozumle(sutun: int):
 	var firlatilan = firlatilan_sandiklar.get(sutun)
 	var dusen = dusen_sandiklar.get(sutun)
-	if firlatilan and dusen and firlatilan.renk == dusen.renk:
+	if firlatilan and dusen and _sandik_renkleri_eslesiyor(firlatilan.renk, dusen):
 		skor += 1
 		seri += 1
 		sayac_label.text = str(skor)
@@ -568,19 +720,24 @@ func cozumle(sutun: int):
 		if seviye_modu and skor >= seviye_hedefi:
 			_seviye_tamamla()
 			return
-		if not seviye_modu and aktif_zorluk == "kolay" and skor >= 15:
+		if not seviye_modu and not donen_sandik_modu and not ucgen_renk_modu and aktif_zorluk == "kolay" and skor >= 15:
 			_gecis_bildirimi(_t("medium_unlocked"))
-			call_deferred("oyunu_baslat", 1.0, 150, "orta")
+			call_deferred("oyunu_baslat", 1.0, 250, "orta")
 			return
-		if not seviye_modu and aktif_zorluk == "orta" and skor >= 30:
+		if not seviye_modu and not donen_sandik_modu and not ucgen_renk_modu and aktif_zorluk == "orta" and skor >= 30:
 			_gecis_bildirimi(_t("hard_unlocked"))
-			call_deferred("oyunu_baslat", 0.75, 100, "zor")
+			call_deferred("oyunu_baslat", 0.75, 300, "zor")
 			return
-		if not seviye_modu and aktif_zorluk == "zor" and skor >= 100:
+		if not seviye_modu and not ucgen_renk_modu and aktif_zorluk == "zor" and skor >= 100:
 			_oyun_bitti_ekrani()
 			return
 		if dusen_sandiklar.is_empty():
 			$Timer.start()
+
+func _sandik_renkleri_eslesiyor(firlatilan_renk: String, dusen: Area2D) -> bool:
+	if dusen.has_method("eslesir_mi"):
+		return dusen.eslesir_mi(firlatilan_renk)
+	return firlatilan_renk == dusen.renk
 
 func yanlis_hamle(mesaj: String):
 	seri = 0
@@ -607,14 +764,28 @@ func _seviye_tamamla():
 	kontrol = false
 	oyun_devam = false
 	$Timer.stop()
-	var yeni_basarimlar = Global.seviye_tamamla(aktif_seviye, skor, seviye_hatalari == 0)
-	var odul = int(SeviyeVeritabani.seviyeyi_al(aktif_seviye)["odul"])
+	var yeni_basarimlar: Array
+	var odul: int
+	if donen_seviye_modu:
+		yeni_basarimlar = Global.donen_seviye_tamamla(aktif_seviye, skor, seviye_hatalari == 0)
+		odul = int(SeviyeVeritabani.donen_seviyeyi_al(aktif_seviye)["odul"])
+	elif ucgen_seviye_modu:
+		yeni_basarimlar = Global.ucgen_seviye_tamamla(aktif_seviye, skor, seviye_hatalari == 0)
+		odul = int(SeviyeVeritabani.ucgen_seviyeyi_al(aktif_seviye)["odul"])
+	else:
+		yeni_basarimlar = Global.seviye_tamamla(aktif_seviye, skor, seviye_hatalari == 0)
+		odul = int(SeviyeVeritabani.seviyeyi_al(aktif_seviye)["odul"])
 	_gecis_bildirimi(_t("level_complete", {"level": aktif_seviye, "stars": odul}))
 	if not yeni_basarimlar.is_empty():
 		_ipucu_goster(_t("achievement_unlocked", {"name": Global.basarim_adi(yeni_basarimlar[0])}))
 	seviye_bilgi_label.visible = false
 	if aktif_seviye < SeviyeVeritabani.TOPLAM_SEVIYE:
-		get_tree().create_timer(1.4).timeout.connect(func(): baslat_seviye(aktif_seviye + 1))
+		if donen_seviye_modu:
+			get_tree().create_timer(1.4).timeout.connect(func(): baslat_donen_seviye(aktif_seviye + 1))
+		elif ucgen_seviye_modu:
+			get_tree().create_timer(1.4).timeout.connect(func(): baslat_ucgen_seviye(aktif_seviye + 1))
+		else:
+			get_tree().create_timer(1.4).timeout.connect(func(): baslat_seviye(aktif_seviye + 1))
 	else:
 		get_tree().create_timer(1.4).timeout.connect(_ana_menuye_don)
 

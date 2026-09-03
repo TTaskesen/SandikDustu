@@ -41,6 +41,12 @@ func _varsayilan_ilerleme() -> Dictionary:
 		"tamamlanan_seviyeler": [],
 		"acik_seviye": 1,
 		"seviye_en_iyi": {},
+		"donen_tamamlanan_seviyeler": [],
+		"donen_acik_seviye": 1,
+		"donen_seviye_en_iyi": {},
+		"ucgen_tamamlanan_seviyeler": [],
+		"ucgen_acik_seviye": 1,
+		"ucgen_seviye_en_iyi": {},
 		"basarimlar": {},
 		"gunluk": {"tarih": "", "gorevler": []},
 		"ogretici_tamamlandi": false,
@@ -121,6 +127,50 @@ func seviye_tamamla(seviye_no: int, skor: int, hatasiz: bool) -> Array:
 	en_iyi[anahtar] = maxi(int(en_iyi.get(anahtar, 0)), skor)
 	ilerleme["acik_seviye"] = mini(SeviyeVeritabani.TOPLAM_SEVIYE, maxi(int(ilerleme["acik_seviye"]), seviye_no + 1))
 	ilerleme["kozmetik_para"] = int(ilerleme["kozmetik_para"]) + int(SeviyeVeritabani.seviyeyi_al(seviye_no)["odul"])
+	gunluk_ilerlet("seviye", 1)
+	if hatasiz:
+		ilerleme["hatasiz_seviye_sayisi"] = int(ilerleme["hatasiz_seviye_sayisi"]) + 1
+	var yeni_basarimlar = basarimlari_guncelle()
+	kaydet_ilerleme()
+	return yeni_basarimlar
+
+func donen_seviye_acik_mi(seviye_no: int) -> bool:
+	return seviye_no >= 1 and seviye_no <= int(ilerleme.get("donen_acik_seviye", 1))
+
+func sonraki_donen_acik_seviye() -> int:
+	return clampi(int(ilerleme.get("donen_acik_seviye", 1)), 1, SeviyeVeritabani.TOPLAM_SEVIYE)
+
+func donen_seviye_tamamla(seviye_no: int, skor: int, hatasiz: bool) -> Array:
+	var tamamlanan: Array = ilerleme["donen_tamamlanan_seviyeler"]
+	if not tamamlanan.has(seviye_no):
+		tamamlanan.append(seviye_no)
+	var en_iyi: Dictionary = ilerleme["donen_seviye_en_iyi"]
+	var anahtar = str(seviye_no)
+	en_iyi[anahtar] = maxi(int(en_iyi.get(anahtar, 0)), skor)
+	ilerleme["donen_acik_seviye"] = mini(SeviyeVeritabani.TOPLAM_SEVIYE, maxi(int(ilerleme["donen_acik_seviye"]), seviye_no + 1))
+	ilerleme["kozmetik_para"] = int(ilerleme["kozmetik_para"]) + int(SeviyeVeritabani.donen_seviyeyi_al(seviye_no)["odul"])
+	gunluk_ilerlet("seviye", 1)
+	if hatasiz:
+		ilerleme["hatasiz_seviye_sayisi"] = int(ilerleme["hatasiz_seviye_sayisi"]) + 1
+	var yeni_basarimlar = basarimlari_guncelle()
+	kaydet_ilerleme()
+	return yeni_basarimlar
+
+func ucgen_seviye_acik_mi(seviye_no: int) -> bool:
+	return seviye_no >= 1 and seviye_no <= int(ilerleme.get("ucgen_acik_seviye", 1))
+
+func sonraki_ucgen_acik_seviye() -> int:
+	return clampi(int(ilerleme.get("ucgen_acik_seviye", 1)), 1, SeviyeVeritabani.TOPLAM_SEVIYE)
+
+func ucgen_seviye_tamamla(seviye_no: int, skor: int, hatasiz: bool) -> Array:
+	var tamamlanan: Array = ilerleme["ucgen_tamamlanan_seviyeler"]
+	if not tamamlanan.has(seviye_no):
+		tamamlanan.append(seviye_no)
+	var en_iyi: Dictionary = ilerleme["ucgen_seviye_en_iyi"]
+	var anahtar = str(seviye_no)
+	en_iyi[anahtar] = maxi(int(en_iyi.get(anahtar, 0)), skor)
+	ilerleme["ucgen_acik_seviye"] = mini(SeviyeVeritabani.TOPLAM_SEVIYE, maxi(int(ilerleme["ucgen_acik_seviye"]), seviye_no + 1))
+	ilerleme["kozmetik_para"] = int(ilerleme["kozmetik_para"]) + int(SeviyeVeritabani.ucgen_seviyeyi_al(seviye_no)["odul"])
 	gunluk_ilerlet("seviye", 1)
 	if hatasiz:
 		ilerleme["hatasiz_seviye_sayisi"] = int(ilerleme["hatasiz_seviye_sayisi"]) + 1

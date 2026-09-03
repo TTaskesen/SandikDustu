@@ -208,6 +208,114 @@ theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
 text = "Geri"
 flat = true
 
+[node name="OyunTurMenuButonlar" type="Node2D" parent="MenuButonlar"]
+
+[node name="OyunTurMenu" type="VBoxContainer" parent="MenuButonlar/OyunTurMenuButonlar"]
+offset_left = 576.0
+offset_top = 320.0
+offset_right = 1152.0
+offset_bottom = 584.0
+
+[node name="Sandik" type="Button" parent="MenuButonlar/OyunTurMenuButonlar/OyunTurMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Sandık"
+flat = true
+
+[node name="SandikRenk" type="Button" parent="MenuButonlar/OyunTurMenuButonlar/OyunTurMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Sandık Renk"
+flat = true
+
+[node name="UcgenRenk" type="Button" parent="MenuButonlar/OyunTurMenuButonlar/OyunTurMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Üçgen Renk"
+flat = true
+
+[node name="Geri" type="Button" parent="MenuButonlar/OyunTurMenuButonlar/OyunTurMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Geri"
+flat = true
+
+[node name="SandikRenkMenuButonlar" type="Node2D" parent="MenuButonlar"]
+
+[node name="SandikRenkMenu" type="VBoxContainer" parent="MenuButonlar/SandikRenkMenuButonlar"]
+offset_left = 576.0
+offset_top = 320.0
+offset_right = 1152.0
+offset_bottom = 584.0
+
+[node name="Kolay" type="Button" parent="MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Kolay"
+flat = true
+
+[node name="Orta" type="Button" parent="MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Orta"
+flat = true
+
+[node name="Zor" type="Button" parent="MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Zor"
+flat = true
+
+[node name="Geri" type="Button" parent="MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Geri"
+flat = true
+
+[node name="UcgenRenkMenuButonlar" type="Node2D" parent="MenuButonlar"]
+
+[node name="UcgenRenkMenu" type="VBoxContainer" parent="MenuButonlar/UcgenRenkMenuButonlar"]
+offset_left = 576.0
+offset_top = 320.0
+offset_right = 1152.0
+offset_bottom = 584.0
+
+[node name="Kolay" type="Button" parent="MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Kolay"
+flat = true
+
+[node name="Orta" type="Button" parent="MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Orta"
+flat = true
+
+[node name="Zor" type="Button" parent="MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Zor"
+flat = true
+
+[node name="Geri" type="Button" parent="MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu"]
+layout_mode = 2
+theme = SubResource("Theme_cwqvt")
+theme_override_colors/font_color = Color(0.843137, 0.839216, 0.831373, 1)
+text = "Geri"
+flat = true
+
 [node name="TekrarDene" type="Node2D" parent="MenuButonlar" unique_id=1672812318]
 
 [node name="TekrarLabel" type="Button" parent="MenuButonlar/TekrarDene" unique_id=557759746]
@@ -400,10 +508,22 @@ flat = true
 [connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Hakkımızda" to="." method="_on_hakkimizda_pressed"]
 [connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Gizlilik" to="." method="_on_gizlilik_pressed"]
 [connection signal="pressed" from="MenuButonlar/BaslaMenuButonlar/BaslaMenu/Çıkış" to="." method="_on_çıkış_pressed"]
-[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Kolay" to="MenuButonlar/Sayac" method="_on_kolay_pressed"]
-[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Orta" to="KolayMenu" method="_on_orta_pressed"]
-[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Zor" to="KolayMenu" method="_on_zor_pressed"]
+[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Kolay" to="KucukSandikOlustur" method="normal_zorluk_baslat" binds=["kolay"]]
+[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Orta" to="KucukSandikOlustur" method="normal_zorluk_baslat" binds=["orta"]]
+[connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Zor" to="KucukSandikOlustur" method="normal_zorluk_baslat" binds=["zor"]]
 [connection signal="pressed" from="MenuButonlar/ZorMenuButonlar/ZorMenu/Geri" to="MenuButonlar/ZorMenuButonlar/ZorMenu" method="_on_geri_pressed"]
+[connection signal="pressed" from="MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/Sandik" to="KucukSandikOlustur" method="sandik_menu_ac"]
+[connection signal="pressed" from="MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/SandikRenk" to="KucukSandikOlustur" method="sandik_renk_menu_ac"]
+[connection signal="pressed" from="MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/UcgenRenk" to="KucukSandikOlustur" method="ucgen_renk_menu_ac"]
+[connection signal="pressed" from="MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/Geri" to="KucukSandikOlustur" method="ekrani_ac"]
+[connection signal="pressed" from="MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu/Kolay" to="KucukSandikOlustur" method="donen_zorluk_baslat" binds=["kolay"]]
+[connection signal="pressed" from="MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu/Orta" to="KucukSandikOlustur" method="donen_zorluk_baslat" binds=["orta"]]
+[connection signal="pressed" from="MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu/Zor" to="KucukSandikOlustur" method="donen_zorluk_baslat" binds=["zor"]]
+[connection signal="pressed" from="MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu/Geri" to="KucukSandikOlustur" method="oyun_tur_menu_ac"]
+[connection signal="pressed" from="MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu/Kolay" to="KucukSandikOlustur" method="ucgen_zorluk_baslat" binds=["kolay"]]
+[connection signal="pressed" from="MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu/Orta" to="KucukSandikOlustur" method="ucgen_zorluk_baslat" binds=["orta"]]
+[connection signal="pressed" from="MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu/Zor" to="KucukSandikOlustur" method="ucgen_zorluk_baslat" binds=["zor"]]
+[connection signal="pressed" from="MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu/Geri" to="KucukSandikOlustur" method="oyun_tur_menu_ac"]
 [connection signal="pressed" from="MenuButonlar/TekrarDene/TekrarLabel" to="MenuButonlar/ZorMenuButonlar/ZorMenu" method="_on_tekrar_label_pressed"]
 [connection signal="area_entered" from="KolayMenu/MenuEkrani/Bariyer" to="KolayMenu" method="_on_bariyer_area_entered"]
 [connection signal="pressed" from="HakkimizdaPaneli/Kapat" to="." method="_on_aciklama_kapat_pressed"]

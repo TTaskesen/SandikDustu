@@ -62,6 +62,19 @@ func _metinleri_yenile():
 	$MenuButonlar/ZorMenuButonlar/ZorMenu/Orta.text = _t("medium")
 	$MenuButonlar/ZorMenuButonlar/ZorMenu/Zor.text = _t("hard")
 	$MenuButonlar/ZorMenuButonlar/ZorMenu/Geri.text = _t("back")
+	$MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/Sandik.text = _t("game_mode_chest")
+	$MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/SandikRenk.text = _t("game_mode_chest_colors")
+	$MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/UcgenRenk.text = _t("game_mode_triangle_colors")
+	$MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/Geri.text = _t("back")
+	for menu_yolu in [
+		"MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu",
+		"MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu",
+	]:
+		var menu = get_node(menu_yolu)
+		menu.get_node("Kolay").text = _t("easy")
+		menu.get_node("Orta").text = _t("medium")
+		menu.get_node("Zor").text = _t("hard")
+		menu.get_node("Geri").text = _t("back")
 	$MenuButonlar/Sayac/GeriButon.text = _t("back")
 	$MenuButonlar/TekrarDene/TekrarLabel.text = _t("try_again")
 	$HakkimizdaPaneli/Baslik.text = _t("how_title")
@@ -100,6 +113,18 @@ func _ana_menu_yazilarini_uygula():
 		$MenuButonlar/ZorMenuButonlar/ZorMenu/Orta,
 		$MenuButonlar/ZorMenuButonlar/ZorMenu/Zor,
 		$MenuButonlar/ZorMenuButonlar/ZorMenu/Geri,
+		$MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/Sandik,
+		$MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/SandikRenk,
+		$MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/UcgenRenk,
+		$MenuButonlar/OyunTurMenuButonlar/OyunTurMenu/Geri,
+		$MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu/Kolay,
+		$MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu/Orta,
+		$MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu/Zor,
+		$MenuButonlar/SandikRenkMenuButonlar/SandikRenkMenu/Geri,
+		$MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu/Kolay,
+		$MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu/Orta,
+		$MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu/Zor,
+		$MenuButonlar/UcgenRenkMenuButonlar/UcgenRenkMenu/Geri,
 		$MenuButonlar/Sayac/GeriButon,
 		$MenuButonlar/TekrarDene/TekrarLabel,
 	]
